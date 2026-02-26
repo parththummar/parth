@@ -170,12 +170,12 @@ function bindAsciiControlsVisibilityToggle() {
 const NOT_AVAILABLE = 'Not available';
 
 function heroIpDisplayText(ipData) {
-  if (!ipData) return `IPv4  ${NOT_AVAILABLE}\nIPv6  ${NOT_AVAILABLE}`;
+  if (!ipData) return `IPv6  ${NOT_AVAILABLE}\nIPv4  ${NOT_AVAILABLE}`;
   const v4 = ipData.ipv4 != null ? ipData.ipv4 : (ipData.ip?.includes('.') ? ipData.ip : null);
   const v6 = ipData.ipv6 != null ? ipData.ipv6 : (ipData.ip?.includes(':') ? ipData.ip : null);
-  const line4 = `IPv4  ${v4 ?? NOT_AVAILABLE}`;
   const line6 = `IPv6  ${v6 ?? NOT_AVAILABLE}`;
-  return `${line4}\n${line6}`;
+  const line4 = `IPv4  ${v4 ?? NOT_AVAILABLE}`;
+  return `${line6}\n${line4}`;
 }
 
 function renderIpData(ipData, client) {
@@ -186,14 +186,14 @@ function renderIpData(ipData, client) {
   const displayV6 = v6 ?? NOT_AVAILABLE;
 
   els.ip?.classList.add('ip-value--dual');
-  setAsciiText(els.ip, `IPv4  ${displayV4}\nIPv6  ${displayV6}`, { onFrame: fitIpHeading, onDone: fitIpHeading });
+  setAsciiText(els.ip, `IPv6  ${displayV6}\nIPv4  ${displayV4}`, { onFrame: fitIpHeading, onDone: fitIpHeading });
   setAsciiText(els.summary, compactSummary(ipData, client));
   renderSnapshots(ipData, client);
 
   renderRows(els.networkRows, [
     ['IP', ipData.ip],
-    ['IPv4', displayV4],
     ['IPv6', displayV6],
+    ['IPv4', displayV4],
     ['TYPE', ipData.type],
     ['ISP', ipData.connection?.isp],
     ['ORG', ipData.connection?.org],
