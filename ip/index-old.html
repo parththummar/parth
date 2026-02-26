@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Is My IP</title>
+  <style>
+    /* --- Reset & base --- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0d0d0d;
+      color: #e0e0e0;
+      font-family: "SF Mono", "Fira Code", "Consolas", "Monaco", monospace;
+      line-height: 1.5;
+      padding: clamp(1rem, 4vw, 2.5rem);
+    }
+
+    /* --- Typography --- */
+    h1, h2, h3, .label, .section-title {
+      font-family: inherit;
+      font-weight: 600;
+    }
+    .section-title {
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #7dd3fc;
+      margin: 0 0 0.75rem 0;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.35rem;
+    }
+    .hero-title {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #a5b4fc;
+      margin: 0 0 0.5rem 0;
+    }
+    .hero-ip {
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      color: #fde047;
+      letter-spacing: 0.02em;
+      margin: 0 0 1rem 0;
+      word-break: break-all;
+    }
+    .hero-location {
+      font-size: clamp(0.8rem, 2vw, 0.95rem);
+      color: #94a3b8;
+      margin: 0 0 2rem 0;
+    }
+
+    /* --- Grid for label/value rows --- */
+    .kv-grid {
+      display: grid;
+      grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr);
+      gap: 0.25rem 1.5rem;
+      align-items: baseline;
+      font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+    }
+    .kv-label {
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+    }
+    .kv-value {
+      color: #e2e8f0;
+      word-break: break-all;
+    }
+
+    /* --- Panels --- */
+    .panel {
+      background: rgba(20, 20, 24, 0.8);
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .panel .section-title { margin-top: 0; }
+
+    /* --- Buttons --- */
+    button {
+      font-family: inherit;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.5rem 1rem;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    button:hover {
+      background: #334155;
+      border-color: #64748b;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+
+    /* --- Animation controls --- */
+    .anim-controls .kv-grid { margin-bottom: 0.5rem; }
+    .anim-controls input[type="number"] {
+      width: 5rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.5rem;
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #e2e8f0;
+      border-radius: 2px;
+    }
+
+    /* --- Raw JSON block --- */
+    .raw-dump {
+      background: #0f0f12;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: #94a3b8;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .raw-dump .key { color: #7dd3fc; }
+    .raw-dump .string { color: #86efac; }
+    .raw-dump .number { color: #fde047; }
+    .raw-dump .bool { color: #f472b6; }
+    .raw-dump .null { color: #64748b; }
+
+    /* --- Animation state (fade-in) --- */
+    [data-animate] { transition: opacity 0.3s ease-out; }
+    [data-animate].animating { opacity: 0; }
+    [data-animate].animated { opacity: 1; }
+
+    /* --- Responsive --- */
+    @media (max-width: 600px) {
+      .kv-grid { grid-template-columns: 1fr; gap: 0.1rem 0; }
+      .kv-label { margin-top: 0.35rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="hero-title" data-animate>WHAT IS MY IP</h1>
+
+    <!-- Hero: device name + IP(s) + location sentence -->
+    <p class="hero-title" data-animate id="hero-greeting">NICE LOOKING MAC! YOUR IP ADDRESS IS</p>
+    <p class="hero-ip" data-animate id="hero-ip">—</p>
+    <p class="hero-location" data-animate id="hero-location">Detecting location…</p>
+  </header>
+
+  <!-- Animation controls (hover replay only affects this section) -->
+  <section class="panel anim-controls">
+    <h2 class="section-title" data-animate>ANIMATION CONTROLS (TEST)</h2>
+    <div class="btn-group">
+      <button type="button" id="btn-replay">REPLAY ALL</button>
+      <button type="button" id="btn-reset">RESET</button>
+    </div>
+    <div class="kv-grid">
+      <span class="kv-label">BASE DURATION (MS)</span>
+      <span><input type="number" id="anim-base" value="900" min="0" step="100"></span>
+      <span class="kv-label">PER CHAR (MS)</span>
+      <span><input type="number" id="anim-per-char" value="150" min="0" step="10"></span>
+      <span class="kv-label">MIN DURATION (MS)</span>
+      <span><input type="number" id="anim-min" value="500" min="0" step="100"></span>
+      <span class="kv-label">MAX DURATION (MS)</span>
+      <span><input type="number" id="anim-max" value="3000" min="0" step="100"></span>
+      <span class="kv-label">HOVER COOLDOWN (MS)</span>
+      <span><input type="number" id="anim-hover-cooldown" value="3000" min="0" step="100"></span>
+    </div>
+    <div class="kv-grid">
+      <span class="kv-label">ASCII CHARSET</span>
+      <span class="kv-value"><code id="ascii-charset">/\\|:;.^~_xX" </code></span>
+    </div>
+    <div class="kv-grid">
+      <span class="kv-label">ASCII EFFECT SAMPLE</span>
+      <span class="kv-value" id="ascii-sample" data-animate>—</span>
+    </div>
+  </section>
+
+  <!-- Speedtest -->
+  <section class="panel" id="section-speedtest">
+    <h2 class="section-title">SPEEDTEST</h2>
+    <div class="kv-grid" id="speedtest-fields">
+      <span class="kv-label">TEST STATUS</span>
+      <span class="kv-value" id="st-status">Not run</span>
+      <span class="kv-label">MEASURED PING (MS)</span>
+      <span class="kv-value" id="st-ping">—</span>
+      <span class="kv-label">MEASURED DOWNLOAD (MBPS)</span>
+      <span class="kv-value" id="st-download">—</span>
+      <span class="kv-label">TRANSFER BYTES</span>
+      <span class="kv-value" id="st-transfer-bytes">—</span>
+      <span class="kv-label">TRANSFER TIME (MS)</span>
+      <span class="kv-value" id="st-transfer-time">—</span>
+      <span class="kv-label">TOTAL TEST TIME (MS)</span>
+      <span class="kv-value" id="st-total-time">—</span>
+      <span class="kv-label">EST DOWNLINK (MBPS)</span>
+      <span class="kv-value" id="st-est-downlink">—</span>
+      <span class="kv-label">EST RTT (MS)</span>
+      <span class="kv-value" id="st-est-rtt">—</span>
+      <span class="kv-label">EFFECTIVE TYPE</span>
+      <span class="kv-value" id="st-effective-type">—</span>
+      <span class="kv-label">CONNECTION TYPE</span>
+      <span class="kv-value" id="st-connection-type">—</span>
+      <span class="kv-label">SERVER</span>
+      <span class="kv-value" id="st-server">—</span>
+      <span class="kv-label">TESTED AT</span>
+      <span class="kv-value" id="st-tested-at">—</span>
+    </div>
+    <div class="btn-group">
+      <button type="button" id="btn-run-speedtest">RUN TEST</button>
+    </div>
+  </section>
+
+  <!-- Network -->
+  <section class="panel" id="section-network">
+    <h2 class="section-title">NETWORK</h2>
+    <div class="kv-grid" id="network-fields">
+      <span class="kv-label">IP</span>
+      <span class="kv-value" id="nw-ip">—</span>
+      <span class="kv-label">TYPE</span>
+      <span class="kv-value" id="nw-type">—</span>
+      <span class="kv-label">ISP</span>
+      <span class="kv-value" id="nw-isp">—</span>
+      <span class="kv-label">ORG</span>
+      <span class="kv-value" id="nw-org">—</span>
+      <span class="kv-label">ASN</span>
+      <span class="kv-value" id="nw-asn">—</span>
+      <span class="kv-label">DOMAIN</span>
+      <span class="kv-value" id="nw-domain">—</span>
+      <span class="kv-label">HOSTNAME</span>
+      <span class="kv-value" id="nw-hostname">—</span>
+      <span class="kv-label">ROUTEABLE</span>
+      <span class="kv-value" id="nw-routeable">—</span>
+      <span class="kv-label">VPN/PROXY/TOR FLAG</span>
+      <span class="kv-value" id="nw-vpn-flag">—</span>
+    </div>
+  </section>
+
+  <!-- Geo / Time -->
+  <section class="panel" id="section-geo">
+    <h2 class="section-title">GEO / TIME</h2>
+    <div class="kv-grid" id="geo-fields">
+      <span class="kv-label">COUNTRY</span>
+      <span class="kv-value" id="geo-country">—</span>
+      <span class="kv-label">COUNTRY CODE</span>
+      <span class="kv-value" id="geo-country-code">—</span>
+      <span class="kv-label">REGION</span>
+      <span class="kv-value" id="geo-region">—</span>
+      <span class="kv-label">CITY</span>
+      <span class="kv-value" id="geo-city">—</span>
+      <span class="kv-label">POSTAL</span>
+      <span class="kv-value" id="geo-postal">—</span>
+      <span class="kv-label">LAT/LON</span>
+      <span class="kv-value" id="geo-latlon">—</span>
+      <span class="kv-label">TIMEZONE</span>
+      <span class="kv-value" id="geo-timezone">—</span>
+      <span class="kv-label">TIMEZONE ABBR</span>
+      <span class="kv-value" id="geo-tz-abbr">—</span>
+      <span class="kv-label">UTC OFFSET</span>
+      <span class="kv-value" id="geo-utc-offset">—</span>
+      <span class="kv-label">LOCAL TIME</span>
+      <span class="kv-value" id="geo-local-time">—</span>
+      <span class="kv-label">DST</span>
+      <span class="kv-value" id="geo-dst">—</span>
+      <span class="kv-label">COUNTRY FLAG</span>
+      <span class="kv-value" id="geo-flag">—</span>
+    </div>
+  </section>
+
+  <!-- Browser -->
+  <section class="panel" id="section-browser">
+    <h2 class="section-title">BROWSER</h2>
+    <div class="kv-grid" id="browser-fields">
+      <span class="kv-label">USER AGENT</span>
+      <span class="kv-value" id="br-user-agent">—</span>
+      <span class="kv-label">LANGUAGES</span>
+      <span class="kv-value" id="br-languages">—</span>
+      <span class="kv-label">PLATFORM</span>
+      <span class="kv-value" id="br-platform">—</span>
+      <span class="kv-label">MOBILE</span>
+      <span class="kv-value" id="br-mobile">—</span>
+      <span class="kv-label">TOUCH POINTS</span>
+      <span class="kv-value" id="br-touch-points">—</span>
+      <span class="kv-label">ONLINE</span>
+      <span class="kv-value" id="br-online">—</span>
+      <span class="kv-label">COOKIES ENABLED</span>
+      <span class="kv-value" id="br-cookies">—</span>
+      <span class="kv-label">DO NOT TRACK</span>
+      <span class="kv-value" id="br-dnt">—</span>
+      <span class="kv-label">TIMEZONE</span>
+      <span class="kv-value" id="br-timezone">—</span>
+      <span class="kv-label">LOCALE</span>
+      <span class="kv-value" id="br-locale">—</span>
+      <span class="kv-label">COLOR SCHEME</span>
+      <span class="kv-value" id="br-color-scheme">—</span>
+      <span class="kv-label">REDUCED MOTION</span>
+      <span class="kv-value" id="br-reduced-motion">—</span>
+      <span class="kv-label">CONNECTION TYPE</span>
+      <span class="kv-value" id="br-connection-type">—</span>
+      <span class="kv-label">EFFECTIVE TYPE</span>
+      <span class="kv-value" id="br-effective-type">—</span>
+      <span class="kv-label">DOWNLINK MBPS</span>
+      <span class="kv-value" id="br-downlink">—</span>
+      <span class="kv-label">RTT MS</span>
+      <span class="kv-value" id="br-rtt">—</span>
+      <span class="kv-label">SAVE DATA</span>
+      <span class="kv-value" id="br-save-data">—</span>
+    </div>
+  </section>
+
+  <!-- Device / Screen -->
+  <section class="panel" id="section-device">
+    <h2 class="section-title">DEVICE / SCREEN</h2>
+    <div class="kv-grid" id="device-fields">
+      <span class="kv-label">SCREEN PX</span>
+      <span class="kv-value" id="dev-screen">—</span>
+      <span class="kv-label">VIEWPORT PX</span>
+      <span class="kv-value" id="dev-viewport">—</span>
+      <span class="kv-label">AVAILABLE SCREEN</span>
+      <span class="kv-value" id="dev-available">—</span>
+      <span class="kv-label">PIXEL RATIO</span>
+      <span class="kv-value" id="dev-pixel-ratio">—</span>
+      <span class="kv-label">COLOR DEPTH</span>
+      <span class="kv-value" id="dev-color-depth">—</span>
+      <span class="kv-label">HARDWARE CONCURRENCY</span>
+      <span class="kv-value" id="dev-concurrency">—</span>
+      <span class="kv-label">DEVICE MEMORY (GB)</span>
+      <span class="kv-value" id="dev-memory">—</span>
+      <span class="kv-label">CPU CLASS</span>
+      <span class="kv-value" id="dev-cpu-class">—</span>
+      <span class="kv-label">PLATFORM TOKEN</span>
+      <span class="kv-value" id="dev-platform-token">—</span>
+      <span class="kv-label">UA BRANDS</span>
+      <span class="kv-value" id="dev-ua-brands">—</span>
+      <span class="kv-label">WEBDRIVER</span>
+      <span class="kv-value" id="dev-webdriver">—</span>
+      <span class="kv-label">MAX TOUCH POINTS</span>
+      <span class="kv-value" id="dev-max-touch">—</span>
+      <span class="kv-label">SECURE CONTEXT</span>
+      <span class="kv-value" id="dev-secure">—</span>
+      <span class="kv-label">REFERRER</span>
+      <span class="kv-value" id="dev-referrer">—</span>
+    </div>
+  </section>
+
+  <!-- Raw JSON -->
+  <section class="panel" id="section-raw">
+    <h2 class="section-title">RAW JSON</h2>
+    <p class="kv-label" style="margin-top:0;">LIVE DUMP</p>
+    <div class="raw-dump" id="raw-dump"><code>{}</code></div>
+  </section>
+
+  <script>
+(function () {
+  "use strict";
+
+  /**
+   * Data flow:
+   * 1. On load: fillDevice() and fillBrowser() from navigator/screen/connection.
+   * 2. fetchGeoAndIps() calls ipapi.co (geo + primary IP) and ipify (IPv4 + IPv6); fills liveData.network and liveData.geo.
+   * 3. fillNetwork() and fillGeo() populate UI from liveData + geo.
+   * 4. setHero() builds device name, IP display, and location sentence from liveData.
+   * 5. updateRawDump() serializes liveData to JSON and renders the LIVE DUMP block.
+   * 6. Speedtest: RUN TEST updates liveData.speedtest and UI; raw dump is refreshed.
+   */
+
+  // --- Single source of truth for all displayed data (used for RAW JSON dump) ---
+  const liveData = {
+    hero: { deviceName: "", ipv4: "", ipv6: "", city: "", region: "", country: "", isp: "", networkType: "" },
+    speedtest: {},
+    network: {},
+    geo: {},
+    browser: {},
+    device: {}
+  };
+
+  // --- Device name from UA (e.g. iPhone, Mac, Windows) ---
+  function getDeviceName() {
+    const ua = navigator.userAgent;
+    if (/iPhone|iPod/i.test(ua)) return "iPhone";
+    if (/iPad/i.test(ua)) return "iPad";
+    if (/Mac/i.test(ua)) return "Mac";
+    if (/Win/i.test(ua)) return "Windows";
+    if (/Android/i.test(ua)) return "Android";
+    if (/Linux/i.test(ua)) return "Linux";
+    return "Device";
+  }
+
+  // --- Country code to flag emoji (e.g. US -> 🇺🇸) ---
+  function countryToFlag(code) {
+    if (!code || code.length !== 2) return "";
+    return [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 - 65 + c.charCodeAt(0))).join("");
+  }
+
+  // --- Populate hero: greeting, IP(s), location sentence ---
+  function setHero(geo) {
+    const device = getDeviceName();
+    liveData.hero.deviceName = device;
+    const greetingEl = document.getElementById("hero-greeting");
+    greetingEl.textContent = `NICE LOOKING ${device.toUpperCase()}! YOUR IP ADDRESS IS`;
+
+    const ipv4 = geo?.ip || liveData.network?.ipv4 || "";
+    const ipv6 = liveData.network?.ipv6 || "";
+    const parts = [ipv4, ipv6].filter(Boolean);
+    const ipDisplay = parts.length ? parts.join(" / ") : "—";
+    liveData.hero.ipv4 = ipv4;
+    liveData.hero.ipv6 = ipv6;
+
+    document.getElementById("hero-ip").textContent = ipDisplay;
+
+    const city = geo?.city ?? liveData.geo?.city ?? "";
+    const region = geo?.region ?? liveData.geo?.region ?? "";
+    const country = geo?.country_name ?? liveData.geo?.country ?? "";
+    const isp = geo?.org ?? liveData.network?.isp ?? "";
+    const netType = liveData.browser?.connectionType ?? "";
+    liveData.hero.city = city;
+    liveData.hero.region = region;
+    liveData.hero.country = country;
+    liveData.hero.isp = isp;
+    liveData.hero.networkType = netType;
+
+    const locEl = document.getElementById("hero-location");
+    const locationParts = [city, region, country].filter(Boolean);
+    const fromStr = locationParts.length ? "It looks like you're connecting from " + locationParts.join(", ") : "";
+    const withStr = fromStr && (isp || netType) ? " with " + (isp || "").trim() + (netType ? (isp ? " " : "") + "(" + netType + ")" : "") + "." : (fromStr ? "." : "");
+    locEl.textContent = (fromStr + withStr).trim() || "Location could not be determined.";
+  }
+
+  // --- Fetch IP geolocation (ipapi.co, no key); optionally fetch IPv4 and IPv6 from ipify ---
+  async function fetchGeoAndIps() {
+    let geo = null;
+    let ipv4 = "";
+    let ipv6 = "";
+
+    try {
+      geo = await (await fetch("https://ipapi.co/json/")).json();
+      if (geo?.ip) {
+        if (geo.ip.includes(":")) ipv6 = geo.ip; else ipv4 = geo.ip;
+      }
+    } catch (e) {
+      console.warn("ipapi.co failed", e);
+    }
+
+    // Try ipify for the other version (one request may fail on single-stack)
+    try {
+      const r4 = await fetch("https://api.ipify.org?format=json");
+      const j4 = await r4.json();
+      if (j4?.ip && !j4.ip.includes(":")) ipv4 = j4.ip;
+    } catch (_) {}
+    try {
+      const r6 = await fetch("https://api6.ipify.org?format=json");
+      const j6 = await r6.json();
+      if (j6?.ip && j6.ip.includes(":")) ipv6 = j6.ip;
+    } catch (_) {}
+
+    liveData.network = liveData.network || {};
+    liveData.network.ipv4 = ipv4 || liveData.network.ipv4;
+    liveData.network.ipv6 = ipv6 || liveData.network.ipv6;
+    liveData.geo = buildGeoData(geo);
+    return geo;
+  }
+
+  function buildGeoData(geo) {
+    if (!geo) return {};
+    const tz = geo.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeStyle: "long", dateStyle: "medium" });
+    let tzAbbr = "";
+    try {
+      const abbrFmt = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "short" });
+      const parts = abbrFmt.formatToParts(now);
+      const tzPart = parts.find(p => p.type === "timeZoneName");
+      if (tzPart) tzAbbr = tzPart.value;
+    } catch (_) {}
+    const offset = -now.getTimezoneOffset();
+    const offsetStr = (offset >= 0 ? "+" : "") + (offset / 60) + "h";
+    const dst = (() => {
+      const jan = new Date(now.getFullYear(), 0, 1);
+      const jul = new Date(now.getFullYear(), 6, 1);
+      const std = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+      return now.getTimezoneOffset() < std ? "Yes" : "No";
+    })();
+    return {
+      country: geo.country_name ?? "",
+      country_code: geo.country_code ?? "",
+      region: geo.region ?? "",
+      city: geo.city ?? "",
+      postal: geo.postal ?? "",
+      lat: geo.latitude,
+      lon: geo.longitude,
+      timezone: tz,
+      timezone_abbr: tzAbbr,
+      utc_offset: offsetStr,
+      local_time: formatter.format(now),
+      dst: dst,
+      country_flag: countryToFlag(geo.country_code)
+    };
+  }
+
+  // --- Populate Network section from geo + liveData ---
+  function fillNetwork(geo) {
+    const n = liveData.network;
+    n.ip = [n.ipv4, n.ipv6].filter(Boolean).join(" / ") || "—";
+    n.type = n.ipv6 ? (n.ipv4 ? "IPv4 + IPv6" : "IPv6") : (n.ipv4 ? "IPv4" : "—");
+    n.isp = geo?.org ?? n.isp ?? "—";
+    n.org = geo?.org ?? "—";
+    n.asn = geo?.asn ? (geo.asn + (geo.org ? " " + geo.org : "")) : "—";
+    n.domain = geo?.version ?? "—";
+    n.hostname = "—";
+    n.routeable = "—";
+    n.vpn_proxy_tor = (geo?.threat?.proxy || geo?.threat?.tor || geo?.threat?.vpn) ? "Yes" : "No";
+
+    const ids = ["nw-ip","nw-type","nw-isp","nw-org","nw-asn","nw-domain","nw-hostname","nw-routeable","nw-vpn-flag"];
+    const keys = ["ip","type","isp","org","asn","domain","hostname","routeable","vpn_proxy_tor"];
+    keys.forEach((k, i) => { const el = document.getElementById(ids[i]); if (el) el.textContent = n[k] ?? "—"; });
+  }
+
+  // --- Populate Geo/Time section ---
+  function fillGeo() {
+    const g = liveData.geo;
+    const ids = ["geo-country","geo-country-code","geo-region","geo-city","geo-postal","geo-latlon","geo-timezone","geo-tz-abbr","geo-utc-offset","geo-local-time","geo-dst","geo-flag"];
+    const keys = ["country","country_code","region","city","postal","latlon","timezone","timezone_abbr","utc_offset","local_time","dst","country_flag"];
+    if (g.lat != null && g.lon != null) g.latlon = g.lat + ", " + g.lon;
+    keys.forEach((k, i) => { const el = document.getElementById(ids[i]); if (el) el.textContent = g[k] ?? "—"; });
+  }
+
+  // --- Browser section from navigator and connection ---
+  function fillBrowser() {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {};
+    const getEffectiveType = () => (conn.effectiveType || "").toUpperCase() || "—";
+    const getType = () => conn.type || "—";
+    const data = {
+      user_agent: navigator.userAgent,
+      languages: (navigator.languages && navigator.languages.length) ? navigator.languages.join(", ") : (navigator.language || "—"),
+      platform: navigator.platform || "—",
+      mobile: navigator.userAgentData?.mobile ?? /Mobi|Android/i.test(navigator.userAgent),
+      touch_points: navigator.maxTouchPoints ?? 0,
+      online: navigator.onLine,
+      cookies_enabled: navigator.cookieEnabled,
+      do_not_track: navigator.doNotTrack ?? "—",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      locale: navigator.language || "—",
+      color_scheme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "no-preference"),
+      reduced_motion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      connection_type: getType(),
+      effective_type: getEffectiveType(),
+      downlink_mbps: conn.downlink != null ? conn.downlink.toFixed(2) : "—",
+      rtt_ms: conn.rtt != null ? conn.rtt : "—",
+      save_data: conn.saveData ?? false
+    };
+    liveData.browser = data;
+    liveData.hero.networkType = data.effective_type || data.connection_type || "";
+
+    const ids = ["br-user-agent","br-languages","br-platform","br-mobile","br-touch-points","br-online","br-cookies","br-dnt","br-timezone","br-locale","br-color-scheme","br-reduced-motion","br-connection-type","br-effective-type","br-downlink","br-rtt","br-save-data"];
+    const keys = ["user_agent","languages","platform","mobile","touch_points","online","cookies_enabled","do_not_track","timezone","locale","color_scheme","reduced_motion","connection_type","effective_type","downlink_mbps","rtt_ms","save_data"];
+    keys.forEach((k, i) => {
+      const el = document.getElementById(ids[i]);
+      if (!el) return;
+      let v = data[keys[i]];
+      if (typeof v === "boolean") v = v ? "Yes" : "No";
+      el.textContent = v ?? "—";
+    });
+  }
+
+  // --- Device/Screen section ---
+  function fillDevice() {
+    const d = liveData.device;
+    d.screen_px = `${screen.width} × ${screen.height}`;
+    d.viewport_px = `${window.innerWidth} × ${window.innerHeight}`;
+    d.available_screen = `${screen.availWidth} × ${screen.availHeight}`;
+    d.pixel_ratio = window.devicePixelRatio ?? "—";
+    d.color_depth = screen.colorDepth ?? "—";
+    d.hardware_concurrency = navigator.hardwareConcurrency ?? "—";
+    d.device_memory_gb = navigator.deviceMemory ?? "—";
+    d.cpu_class = navigator.cpuClass ?? "—";
+    d.platform_token = navigator.userAgentData?.platform ?? "—";
+    d.ua_brands = navigator.userAgentData?.brands ? navigator.userAgentData.brands.map(b => b.brand + "/" + b.version).join(", ") : "—";
+    d.webdriver = navigator.webdriver ?? false;
+    d.max_touch_points = navigator.maxTouchPoints ?? "—";
+    d.secure_context = window.isSecureContext;
+    d.referrer = document.referrer || "(none)";
+
+    const ids = ["dev-screen","dev-viewport","dev-available","dev-pixel-ratio","dev-color-depth","dev-concurrency","dev-memory","dev-cpu-class","dev-platform-token","dev-ua-brands","dev-webdriver","dev-max-touch","dev-secure","dev-referrer"];
+    const keys = ["screen_px","viewport_px","available_screen","pixel_ratio","color_depth","hardware_concurrency","device_memory_gb","cpu_class","platform_token","ua_brands","webdriver","max_touch_points","secure_context","referrer"];
+    keys.forEach((k, i) => {
+      const el = document.getElementById(ids[i]);
+      if (!el) return;
+      let v = d[keys[i]];
+      if (typeof v === "boolean") v = v ? "Yes" : "No";
+      el.textContent = v ?? "—";
+    });
+  }
+
+  // --- Speedtest: simulated run ---
+  function runSpeedtest() {
+    const st = liveData.speedtest = liveData.speedtest || {};
+    const statusEl = document.getElementById("st-status");
+    statusEl.textContent = "Running…";
+    document.getElementById("btn-run-speedtest").disabled = true;
+
+    setTimeout(() => {
+      // Simulate failure or partial result
+      st.test_status = "Failed (simulated)";
+      st.measured_ping_ms = "—";
+      st.measured_download_mbps = "—";
+      st.transfer_bytes = "—";
+      st.transfer_time_ms = "—";
+      st.total_test_time_ms = "—";
+      st.est_downlink_mbps = liveData.browser?.downlink_mbps ?? "—";
+      st.est_rtt_ms = liveData.browser?.rtt_ms ?? "—";
+      st.effective_type = liveData.browser?.effective_type ?? "—";
+      st.connection_type = liveData.browser?.connection_type ?? "—";
+      st.server = "—";
+      st.tested_at = new Date().toISOString();
+
+      statusEl.textContent = st.test_status;
+      document.getElementById("st-ping").textContent = st.measured_ping_ms;
+      document.getElementById("st-download").textContent = st.measured_download_mbps;
+      document.getElementById("st-transfer-bytes").textContent = st.transfer_bytes;
+      document.getElementById("st-transfer-time").textContent = st.transfer_time_ms;
+      document.getElementById("st-total-time").textContent = st.total_test_time_ms;
+      document.getElementById("st-est-downlink").textContent = st.est_downlink_mbps;
+      document.getElementById("st-est-rtt").textContent = st.est_rtt_ms;
+      document.getElementById("st-effective-type").textContent = st.effective_type;
+      document.getElementById("st-connection-type").textContent = st.connection_type;
+      document.getElementById("st-server").textContent = st.server;
+      document.getElementById("st-tested-at").textContent = st.tested_at;
+      document.getElementById("btn-run-speedtest").disabled = false;
+      updateRawDump();
+    }, 1500);
+  }
+
+  // --- Update RAW JSON dump (formatted, syntax-highlighted) ---
+  function updateRawDump() {
+    const el = document.getElementById("raw-dump");
+    const json = JSON.stringify(liveData, null, 2);
+    el.innerHTML = "<code>" + escapeHtml(highlightJson(json)) + "</code>";
+  }
+
+  function escapeHtml(s) {
+    const div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function highlightJson(json) {
+    return json
+      .replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:')
+      .replace(/: "((?:[^"\\]|\\.)*)"/g, (_, v) => ': <span class="string">"' + escapeHtml(v) + '"</span>')
+      .replace(/: (-?\d+\.?\d*)/g, ': <span class="number">$1</span>')
+      .replace(/: (true|false)/g, ': <span class="bool">$1</span>')
+      .replace(/: (null)/g, ': <span class="null">$1</span>');
+  }
+
+  // --- Animation: typing/fade-in with config ---
+  let hoverCooldownUntil = 0;
+
+  function getAnimConfig() {
+    return {
+      base: Number(document.getElementById("anim-base").value) || 900,
+      perChar: Number(document.getElementById("anim-per-char").value) || 150,
+      min: Number(document.getElementById("anim-min").value) || 500,
+      max: Number(document.getElementById("anim-max").value) || 3000,
+      hoverCooldown: Number(document.getElementById("anim-hover-cooldown").value) || 3000
+    };
+  }
+
+  function animateElements(trigger) {
+    if (trigger === "hover" && Date.now() < hoverCooldownUntil) return;
+    if (trigger === "hover") hoverCooldownUntil = Date.now() + getAnimConfig().hoverCooldown;
+
+    // On hover: only animate elements inside the animation controls panel (never the header)
+    const scope = trigger === "hover" ? ".anim-controls" : "body";
+    const els = scope === "body"
+      ? document.querySelectorAll("[data-animate]")
+      : document.querySelectorAll(".anim-controls [data-animate]");
+    const cfg = getAnimConfig();
+    els.forEach(el => {
+      el.classList.remove("animated");
+      el.classList.add("animating");
+      const len = (el.textContent || "").length;
+      const duration = Math.min(cfg.max, Math.max(cfg.min, cfg.base + len * cfg.perChar));
+      setTimeout(() => {
+        el.classList.remove("animating");
+        el.classList.add("animated");
+      }, duration);
+    });
+  }
+
+  function resetAnimations() {
+    document.querySelectorAll("[data-animate]").forEach(el => {
+      el.classList.remove("animating", "animated");
+    });
+    hoverCooldownUntil = 0;
+  }
+
+  // --- ASCII effect sample (simple cycling chars) ---
+  const asciiChars = '/\\|:;.^~_xX" ';
+  let asciiIdx = 0;
+  function tickAscii() {
+    const el = document.getElementById("ascii-sample");
+    if (el) el.textContent = asciiChars[asciiIdx % asciiChars.length];
+    asciiIdx++;
+  }
+  setInterval(tickAscii, 200);
+
+  // --- Init: collect data, fill sections, then animate ---
+  async function init() {
+    // Start with hero/header elements hidden for fade-in on first load
+    document.querySelectorAll("[data-animate]").forEach(el => el.classList.add("animating"));
+    fillDevice();
+    fillBrowser();
+    const geo = await fetchGeoAndIps();
+    fillNetwork(geo);
+    fillGeo();
+    setHero(geo);
+    updateRawDump();
+
+    document.getElementById("btn-run-speedtest").addEventListener("click", runSpeedtest);
+    document.getElementById("btn-replay").addEventListener("click", () => animateElements("click"));
+    document.getElementById("btn-reset").addEventListener("click", resetAnimations);
+
+    // Hover cooldown: replay only when hovering the animation controls panel (not the header)
+    const animPanel = document.querySelector(".anim-controls");
+    if (animPanel) {
+      animPanel.addEventListener("mouseenter", () => animateElements("hover"));
+    }
+
+    // Initial fade-in animation after data is ready
+    setTimeout(() => animateElements("click"), 150);
+  }
+
+  init();
+})();
+  </script>
+</body>
+</html>
