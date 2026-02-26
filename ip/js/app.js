@@ -229,10 +229,10 @@ function renderHeroCopy(client) {
   }
   const device = friendlyDeviceName(client);
   if (isMobile) {
-    setAsciiText(els.heroKicker, `YOU'RE USING ${device.toUpperCase()}.\nYOUR IP ADDRESS IS`);
+    setAsciiText(els.heroKicker, `NICE LOOKING ${device.toUpperCase()}.\nYOUR IP ADDRESS IS`);
     return;
   }
-  setAsciiText(els.heroKicker, `YOU'RE USING ${device.toUpperCase()}. GREAT CHOICE. YOUR IP ADDRESS IS`);
+  setAsciiText(els.heroKicker, `NICE LOOKING ${device.toUpperCase()}. GREAT CHOICE. YOUR IP ADDRESS IS`);
 }
 
 function bindIpAutofit() {
@@ -256,8 +256,8 @@ function fitIpHeading() {
   const el = els.ip;
   if (!el) return;
 
-  const maxPx = 72;
-  const minPx = 18;
+  const maxPx = 36;
+  const minPx = 14;
   el.style.fontSize = `${maxPx}px`;
 
   // Shrink until the text fits the hero content width.

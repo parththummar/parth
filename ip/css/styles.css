@@ -124,7 +124,7 @@ body {
 .ip-value {
   margin: 0;
   max-width: 100%;
-  font-size: clamp(28px, 6vw, 72px);
+  font-size: clamp(18px, 3.5vw, 36px);
   line-height: 0.95;
   letter-spacing: 0.02em;
   text-align: left;
