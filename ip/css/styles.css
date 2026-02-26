@@ -237,6 +237,59 @@ body {
   min-width: 0;
 }
 
+.panel-copy-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid var(--btn-border);
+  background: linear-gradient(180deg, var(--btn-grad-top), var(--btn-grad-bottom));
+  color: var(--ink);
+  border-radius: 9px;
+  font: inherit;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: background-color 80ms ease-out, border-color 80ms ease-out, opacity 80ms ease-out, transform 60ms ease-out;
+}
+
+.panel-copy-btn .panel-copy-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.panel-copy-btn .panel-copy-btn-label {
+  line-height: 1;
+}
+
+.panel-copy-btn:hover {
+  border-color: var(--btn-border-hover);
+  background: linear-gradient(180deg, var(--btn-grad-top-hover), var(--btn-grad-bottom-hover));
+}
+
+.panel-copy-btn:active {
+  transform: translateY(1px);
+}
+
+.panel-copy-btn--copied {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(110, 231, 183, 0.25), rgba(110, 231, 183, 0.1));
+  color: var(--accent);
+}
+
+.panel-head--hero {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.panel-head--hero .panel-copy-btn {
+  margin: 0;
+}
+
 .panel.wide {
   grid-column: 1 / -1;
   min-height: 260px;

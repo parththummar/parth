@@ -75,6 +75,7 @@ async function init() {
   renderClientSections(client);
   renderSpeedPanel(client, null);
   bindSpeedTest();
+  bindSectionCopyButtons();
   let seededIp = null;
   const ipSeedTask = fetchPublicIpOnly()
     .then((ip) => {
@@ -328,6 +329,116 @@ function renderSpeedPanel(client, result) {
   ];
 
   renderRows(els.speedRows, entries, els.speedCount);
+}
+
+function getRowsAsText(rowsEl) {
+  if (!rowsEl) return '';
+  return Array.from(rowsEl.querySelectorAll('.row'))
+    .map((row) => {
+      const k = row.querySelector('.key');
+      const v = row.querySelector('.value');
+      return `${(k?.textContent ?? '').trim()}: ${(v?.textContent ?? '').trim()}`;
+    })
+    .filter(Boolean)
+    .join('\n');
+}
+
+function getSectionCopyText(sectionId) {
+  switch (sectionId) {
+    case 'hero': {
+      const parts = [];
+      const kicker = document.getElementById('hero-kicker');
+      const ip = document.getElementById('ip-address');
+      const summary = document.getElementById('ip-summary');
+      if (kicker?.textContent) parts.push(kicker.textContent.trim());
+      if (ip?.textContent) parts.push(ip.textContent.trim());
+      if (summary?.textContent) parts.push(summary.textContent.trim());
+      const grid = document.getElementById('snapshot-grid');
+      if (grid) {
+        grid.querySelectorAll('.snapshot-card').forEach((card) => {
+          const key = card.querySelector('.snapshot-key');
+          const val = card.querySelector('.snapshot-value');
+          if (key?.textContent && val?.textContent) {
+            parts.push(`${key.textContent.trim()}: ${val.textContent.trim()}`);
+          }
+        });
+      }
+      return parts.join('\n');
+    }
+    case 'speed':
+      return getRowsAsText(document.getElementById('speed-rows'));
+    case 'network':
+      return getRowsAsText(document.getElementById('network-rows'));
+    case 'geo':
+      return getRowsAsText(document.getElementById('geo-rows'));
+    case 'browser':
+      return getRowsAsText(document.getElementById('browser-rows'));
+    case 'device':
+      return getRowsAsText(document.getElementById('device-rows'));
+    case 'raw': {
+      const el = document.getElementById('raw-json');
+      return el?.textContent?.trim() ?? '{}';
+    }
+    default:
+      return '';
+  }
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, text.length);
+  try {
+    document.execCommand('copy');
+    return Promise.resolve();
+  } finally {
+    document.body.removeChild(ta);
+  }
+}
+
+function getHeroIpOnlyText() {
+  const el = document.getElementById('ip-address');
+  const raw = (el?.textContent ?? '').trim();
+  return raw
+    .split('\n')
+    .map((line) => line.replace(/^(IPv6|IPv4)\s+/i, '').trim())
+    .filter((s) => s && s !== 'Not available' && s !== 'LOADING...' && s !== 'UNAVAILABLE')
+    .join('\n');
+}
+
+function bindSectionCopyButtons() {
+  document.querySelectorAll('.panel-copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const iconHtml = btn.innerHTML;
+      let text;
+      if (btn.id === 'hero-copy-ip-btn') {
+        text = getHeroIpOnlyText();
+      } else {
+        const section = btn.getAttribute('data-copy-section');
+        if (!section) return;
+        text = getSectionCopyText(section);
+      }
+      if (!text) return;
+      try {
+        await copyToClipboard(text);
+        btn.innerHTML = 'Copied!';
+        btn.classList.add('panel-copy-btn--copied');
+        setTimeout(() => {
+          btn.innerHTML = iconHtml;
+          btn.classList.remove('panel-copy-btn--copied');
+        }, 1500);
+      } catch {
+        btn.innerHTML = 'Copy failed';
+        setTimeout(() => { btn.innerHTML = iconHtml; }, 1500);
+      }
+    });
+  });
 }
 
 function bindSpeedTest() {

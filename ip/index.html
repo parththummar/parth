@@ -20,7 +20,14 @@
   <body>
     <main class="app-shell">
       <section class="grid" aria-label="IP and device diagnostics">
-        <header class="hero panel wide">
+        <header class="hero panel wide" id="section-hero">
+          <div class="panel-head panel-head--hero">
+            <span></span>
+            <div class="panel-head-actions">
+              <button type="button" class="panel-copy-btn" id="hero-copy-ip-btn" aria-label="Copy IP only" title="Copy IP"><svg class="panel-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="panel-copy-btn-label"> IP</span></button>
+              <button type="button" class="panel-copy-btn" data-copy-section="hero" aria-label="Copy section" title="Copy section"><svg class="panel-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            </div>
+          </div>
           <div class="eyebrow" id="hero-kicker">CHECKING YOUR DEVICE...</div>
           <h1 id="ip-address" class="ip-value">LOADING...</h1>
           <div id="ip-summary" class="summary-line">FETCHING YOUR CONNECTION DETAILS...</div>
@@ -111,6 +118,7 @@
             <h2>SPEED TEST</h2>
             <div class="panel-head-actions">
               <div class="panel-count" id="speed-count">0 FIELDS</div>
+              <button type="button" class="panel-copy-btn" data-copy-section="speed" aria-label="Copy section" title="Copy section"><svg class="panel-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
               <button id="run-speed-test" class="speed-btn" type="button" data-run-speed-test="">RUN TEST</button>
             </div>
           </div>
@@ -120,7 +128,10 @@
         <section class="panel" id="panel-network">
           <div class="panel-head">
             <h2>NETWORK</h2>
-            <div class="panel-count" id="network-count">0 FIELDS</div>
+            <div class="panel-head-actions">
+              <div class="panel-count" id="network-count">0 FIELDS</div>
+              <button type="button" class="panel-copy-btn" data-copy-section="network" aria-label="Copy section" title="Copy section"><svg class="panel-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            </div>
           </div>
           <div class="rows" id="network-rows"></div>
         </section>
@@ -128,7 +139,10 @@
         <section class="panel" id="panel-geo">
           <div class="panel-head">
             <h2>GEO / TIME</h2>
-            <div class="panel-count" id="geo-count">0 FIELDS</div>
+            <div class="panel-head-actions">
+              <div class="panel-count" id="geo-count">0 FIELDS</div>
+              <button type="button" class="panel-copy-btn" data-copy-section="geo" aria-label="Copy section" title="Copy section"><svg class="panel-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            </div>
           </div>
           <div class="rows" id="geo-rows"></div>
         </section>
@@ -136,7 +150,10 @@
         <section class="panel" id="panel-browser">
           <div class="panel-head">
             <h2>BROWSER</h2>
-            <div class="panel-count" id="browser-count">0 FIELDS</div>
+            <div class="panel-head-actions">
+              <div class="panel-count" id="browser-count">0 FIELDS</div>
+              <button type="button" class="panel-copy-btn" data-copy-section="browser" aria-label="Copy section" title="Copy section"><svg class="panel-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            </div>
           </div>
           <div class="rows" id="browser-rows"></div>
         </section>
@@ -144,7 +161,10 @@
         <section class="panel" id="panel-device">
           <div class="panel-head">
             <h2>DEVICE / SCREEN</h2>
-            <div class="panel-count" id="device-count">0 FIELDS</div>
+            <div class="panel-head-actions">
+              <div class="panel-count" id="device-count">0 FIELDS</div>
+              <button type="button" class="panel-copy-btn" data-copy-section="device" aria-label="Copy section" title="Copy section"><svg class="panel-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            </div>
           </div>
           <div class="rows" id="device-rows"></div>
         </section>
@@ -152,7 +172,10 @@
         <section class="panel wide" id="panel-raw">
           <div class="panel-head">
             <h2>RAW JSON</h2>
-            <div class="panel-count">LIVE DUMP</div>
+            <div class="panel-head-actions">
+              <div class="panel-count">LIVE DUMP</div>
+              <button type="button" class="panel-copy-btn" data-copy-section="raw" aria-label="Copy section" title="Copy section"><svg class="panel-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            </div>
           </div>
           <pre id="raw-json" class="raw-json">{}</pre>
         </section>
