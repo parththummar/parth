@@ -422,11 +422,20 @@ async function measureLatencyMs() {
 }
 
 async function measureDownloadMbps() {
-  const bytes = 5_000_000;
-  const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&nocache=${Date.now()}`;
+  const warmupBytes = 100_000;
+  const bytes = 20_000_000;
+  const base = 'https://speed.cloudflare.com/__down';
   try {
+    const warmup = await fetch(`${base}?bytes=${warmupBytes}&nocache=${Date.now()}`, {
+      cache: 'no-store',
+      mode: 'cors'
+    });
+    if (warmup.ok) await warmup.blob();
     const t0 = performance.now();
-    const res = await fetch(url, { cache: 'no-store', mode: 'cors' });
+    const res = await fetch(`${base}?bytes=${bytes}&nocache=${Date.now()}`, {
+      cache: 'no-store',
+      mode: 'cors'
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const blob = await res.blob();
     const ms = performance.now() - t0;

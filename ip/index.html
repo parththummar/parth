@@ -167,7 +167,7 @@
     </template>
 
     <script>
-      if (/^https?:/.test(location.protocol) && !/^localhost$|^127\.\d+\.\d+\.\d+$/.test(location.hostname)) {
+      if (/^https?:/.test(location.protocol) && /\.vercel\.app$/.test(location.hostname)) {
         var s = document.createElement('script');
         s.src = 'js/script.js';
         s.defer = true;
