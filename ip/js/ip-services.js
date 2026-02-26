@@ -1,29 +1,44 @@
 /**
- * IP lookup services: fetch public IP and full geo/connection data.
- * Uses ipapi.co (CORS-friendly; free tier, no key for basic use).
+ * IP and geo: JSONP for geo (avoids CORS). Fallback to ipify for IP only.
  */
 
+const GEO_JSONP_URL = 'https://reallyfreegeoip.org/json/';
 const IPIFY_URL = 'https://api.ipify.org?format=json';
-const IPAPI_URL = 'https://ipapi.co/json/';
-
-// IPv4-only endpoints. All tried in parallel; first successful result used.
-const IPV4_URLS = [
-  { url: 'https://api.ipify.org?format=json', json: true },
-  { url: 'https://ipv4.icanhazip.com/', json: false },
-  { url: 'https://ipv4.seeip.org/jsonip', json: true },
-  { url: 'https://4.ident.me/', json: false }
-];
-
-// IPv6-only endpoints.
-const IPV6_URLS = [
-  { url: 'https://api6.ipify.org?format=json', json: true },
-  { url: 'https://ipv6.icanhazip.com/', json: false },
-  { url: 'https://6.ident.me/', json: false }
-];
 
 /**
- * Fetch only the public IP string. Uses ipify (no key, CORS-friendly).
- * @returns {Promise<string|null>} IP string or null on failure.
+ * Fetch JSON via JSONP (works without CORS). Resolves with parsed data or rejects.
+ * @param {string} url - Base URL; callback param will be appended.
+ * @returns {Promise<object>}
+ */
+function fetchJsonp(url) {
+  return new Promise((resolve, reject) => {
+    const name = `__geo_cb_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error('Geo API timeout'));
+    }, 12000);
+    function cleanup() {
+      clearTimeout(timeout);
+      window[name] = () => {};
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[name] = (data) => {
+      cleanup();
+      resolve(data);
+    };
+    const script = document.createElement('script');
+    script.src = `${url}?callback=${encodeURIComponent(name)}`;
+    script.onerror = () => {
+      cleanup();
+      reject(new Error('Geo API failed'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+/**
+ * Fetch IP only (fallback when geo API fails). CORS-friendly.
+ * @returns {Promise<string|null>}
  */
 export async function fetchPublicIpOnly() {
   try {
@@ -38,112 +53,57 @@ export async function fetchPublicIpOnly() {
 }
 
 /**
- * Fetch one IP from a URL; expects JSON { ip } or plain text.
- * @param {string} url
- * @param {{ json: boolean }} opts
- * @returns {Promise<string|null>}
- */
-async function fetchOneIp(url, opts = {}) {
-  const json = opts.json !== false;
-  try {
-    const r = await fetch(url, { cache: 'no-store', mode: 'cors' });
-    if (!r.ok) return null;
-    const raw = await (json ? r.json() : r.text());
-    const ip = json ? raw?.ip : raw?.trim();
-    const s = typeof ip === 'string' ? ip.trim() : '';
-    return s.length > 0 ? s : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Try multiple URLs in parallel; return the first successful IP (or null).
- * @param {Array<{ url: string, json: boolean }>} urls
- * @returns {Promise<string|null>}
- */
-async function fetchFirstIp(urls) {
-  const results = await Promise.all(
-    urls.map(({ url, json }) => fetchOneIp(url, { json }))
-  );
-  return results.find((ip) => ip != null && ip.length > 0) ?? null;
-}
-
-/**
- * Fetch IPv4 and IPv6 in parallel from dedicated endpoints (not from geo API).
- * Tries multiple URLs for each; first successful response per family is used.
- * @returns {Promise<{ ipv4: string|null, ipv6: string|null }>}
- */
-export async function fetchBothIpVersions() {
-  const [ipv4, ipv6] = await Promise.all([
-    fetchFirstIp(IPV4_URLS),
-    fetchFirstIp(IPV6_URLS)
-  ]);
-  return { ipv4, ipv6 };
-}
-
-/**
- * Normalize a raw IP string into the minimal shape expected by the app (ip + type).
- * @param {string} ip - Raw IP string.
- * @returns {{ ip: string, type?: string }} Object with at least .ip for renderIpData.
+ * Normalize a raw IP into the minimal shape for renderIpData.
+ * @param {string} ip
+ * @returns {{ ip: string, type: string, ipv4: string|null, ipv6: string|null }}
  */
 export function normalizeIpOnly(ip) {
   const raw = String(ip ?? '').trim();
   const type = raw.includes(':') ? 'IPv6' : 'IPv4';
-  return { ip: raw || 'UNKNOWN', type };
+  return {
+    ip: raw || 'UNKNOWN',
+    type,
+    ipv4: raw.includes('.') ? raw : null,
+    ipv6: raw.includes(':') ? raw : null
+  };
 }
 
 /**
- * Fetch full IP geo/connection data. Uses ipapi.co (free tier, no key).
- * Response is normalized to the shape expected by app.js.
- * @returns {Promise<object>} Normalized IP data for renderIpData.
+ * Fetch IP + geo via JSONP (avoids CORS). reallyfreegeoip.org, no key.
+ * Returns shape expected by app.js. No ISP in API response.
  */
 export async function fetchIpData() {
-  const res = await fetch(IPAPI_URL, { cache: 'no-store', mode: 'cors' });
-  if (!res.ok) throw new Error(`IP API HTTP ${res.status}`);
-  const data = await res.json();
-
-  if (data?.error) {
-    throw new Error(data.reason || data.error || 'IP lookup failed');
-  }
+  const data = await fetchJsonp(GEO_JSONP_URL);
 
   const ip = data.ip ?? '';
-  const type = (data.version ?? (ip.includes(':') ? 'IPv6' : 'IPv4')).toString();
+  const type = ip.includes(':') ? 'IPv6' : 'IPv4';
+  const ipv4 = ip.includes('.') ? ip : null;
+  const ipv6 = ip.includes(':') ? ip : null;
+  const tz = data.time_zone ?? data.timezone;
 
   return {
     ip,
     type,
-    ipv4: null,
-    ipv6: null,
+    ipv4,
+    ipv6,
     country: data.country_name ?? data.country ?? null,
     country_code: data.country_code ?? null,
-    region: data.region ?? null,
+    region: data.region_name ?? data.region ?? null,
     city: data.city ?? null,
-    postal: data.postal ?? null,
+    postal: data.zip_code ?? data.postal ?? null,
     latitude: typeof data.latitude === 'number' ? data.latitude : null,
     longitude: typeof data.longitude === 'number' ? data.longitude : null,
-    timezone: data.timezone
-      ? {
-          id: data.timezone,
-          abbr: null,
-          utc: data.utc_offset ?? null,
-          current_time: null,
-          is_dst: null
-        }
+    timezone: tz
+      ? { id: tz, abbr: null, utc: null, current_time: null, is_dst: null }
       : null,
     connection: {
-      isp: data.org ?? null,
-      org: data.org ?? null,
-      asn: data.asn ?? null,
+      isp: null,
+      org: null,
+      asn: null,
       domain: null,
-      hostname: data.hostname ?? null
+      hostname: null
     },
-    security: {
-      proxy: false,
-      vpn: false,
-      tor: false,
-      relay: false
-    },
+    security: { proxy: false, vpn: false, tor: false, relay: false },
     flag: null
   };
 }

@@ -5,7 +5,7 @@ import {
   FIELD_TOOLTIPS,
   SNAPSHOT_TOOLTIPS
 } from './app-constants.js';
-import { fetchIpData, fetchPublicIpOnly, fetchBothIpVersions, normalizeIpOnly } from './ip-services.js';
+import { fetchIpData, fetchPublicIpOnly, normalizeIpOnly } from './ip-services.js';
 
 const els = {
   heroKicker: document.getElementById('hero-kicker'),
@@ -85,16 +85,10 @@ async function init() {
     .catch(() => null);
 
   try {
-    const [ipData, both] = await Promise.all([fetchIpData(), fetchBothIpVersions()]);
-    ipData.ipv4 = both.ipv4 ?? (ipData.ip?.includes('.') ? ipData.ip : null);
-    ipData.ipv6 = both.ipv6 ?? (ipData.ip?.includes(':') ? ipData.ip : null);
-    if (ipData.ipv4 == null && ipData.ipv6 == null) {
-      ipData.ipv4 = ipData.ip?.includes('.') ? ipData.ip : null;
-      ipData.ipv6 = ipData.ip?.includes(':') ? ipData.ip : null;
-    }
-    ipData.ip = ipData.ipv4 ?? ipData.ipv6 ?? ipData.ip;
+    const ipData = await fetchIpData();
     ipData.ipv4 = ipData.ipv4 ?? null;
     ipData.ipv6 = ipData.ipv6 ?? null;
+    ipData.ip = ipData.ipv4 ?? ipData.ipv6 ?? ipData.ip;
     state.ipApi = ipData;
     renderIpData(ipData, client);
     renderRawJson();
@@ -102,20 +96,12 @@ async function init() {
     await ipSeedTask;
     if (seededIp) {
       const ipOnly = normalizeIpOnly(seededIp);
-      const both = await fetchBothIpVersions().catch(() => ({ ipv4: null, ipv6: null }));
-      ipOnly.ipv4 = both.ipv4 ?? (seededIp?.includes('.') ? seededIp : null);
-      ipOnly.ipv6 = both.ipv6 ?? (seededIp?.includes(':') ? seededIp : null);
-      if (ipOnly.ipv4 == null && ipOnly.ipv6 == null) {
-        ipOnly.ipv4 = seededIp?.includes('.') ? seededIp : null;
-        ipOnly.ipv6 = seededIp?.includes(':') ? seededIp : null;
-      }
-      ipOnly.ipv4 = ipOnly.ipv4 ?? null;
-      ipOnly.ipv6 = ipOnly.ipv6 ?? null;
       state.ipApi = ipOnly;
       renderIpData(ipOnly, client);
       setAsciiText(els.summary, "I could read your IP, but the location provider didn't return full details.");
     } else {
-      setAsciiText(els.ip, 'UNAVAILABLE', { onFrame: fitIpHeading, onDone: fitIpHeading });
+      els.ip?.style.setProperty('font-size', '18px');
+      setAsciiText(els.ip, 'UNAVAILABLE', { onDone: scheduleIpFitAfterRender });
       setAsciiText(els.summary, "I couldn't read your public IP details right now.");
     }
     renderRawJson({ error: String(error) });
@@ -170,12 +156,15 @@ function bindAsciiControlsVisibilityToggle() {
 const NOT_AVAILABLE = 'Not available';
 
 function heroIpDisplayText(ipData) {
-  if (!ipData) return `IPv6  ${NOT_AVAILABLE}\nIPv4  ${NOT_AVAILABLE}`;
+  if (!ipData) return NOT_AVAILABLE;
   const v4 = ipData.ipv4 != null ? ipData.ipv4 : (ipData.ip?.includes('.') ? ipData.ip : null);
   const v6 = ipData.ipv6 != null ? ipData.ipv6 : (ipData.ip?.includes(':') ? ipData.ip : null);
-  const line6 = `IPv6  ${v6 ?? NOT_AVAILABLE}`;
-  const line4 = `IPv4  ${v4 ?? NOT_AVAILABLE}`;
-  return `${line6}\n${line4}`;
+  const has4 = v4 != null && v4.length > 0;
+  const has6 = v6 != null && v6.length > 0;
+  if (has6 && has4) return `IPv6  ${v6}\nIPv4  ${v4}`;
+  if (has6) return `IPv6  ${v6}`;
+  if (has4) return `IPv4  ${v4}`;
+  return ipData.ip || NOT_AVAILABLE;
 }
 
 function renderIpData(ipData, client) {
@@ -185,8 +174,10 @@ function renderIpData(ipData, client) {
   const displayV4 = v4 ?? NOT_AVAILABLE;
   const displayV6 = v6 ?? NOT_AVAILABLE;
 
-  els.ip?.classList.add('ip-value--dual');
-  setAsciiText(els.ip, `IPv6  ${displayV6}\nIPv4  ${displayV4}`, { onFrame: fitIpHeading, onDone: fitIpHeading });
+  const heroText = heroIpDisplayText(ipData);
+  els.ip?.classList.toggle('ip-value--dual', heroText.includes('\n'));
+  els.ip?.style.setProperty('font-size', '18px');
+  setAsciiText(els.ip, heroText, { onDone: scheduleIpFitAfterRender });
   setAsciiText(els.summary, compactSummary(ipData, client));
   renderSnapshots(ipData, client);
 
@@ -256,7 +247,9 @@ function fitIpHeading() {
   const el = els.ip;
   if (!el) return;
 
-  const maxPx = 36;
+  const text = (el.textContent || '').trim();
+  const isPlaceholder = /^(loading|\.\.\.|—)$/i.test(text) || text.length < 8;
+  const maxPx = isPlaceholder ? 20 : 36;
   const minPx = 14;
   el.style.fontSize = `${maxPx}px`;
 
@@ -265,6 +258,16 @@ function fitIpHeading() {
     el.style.fontSize = `${Math.max(minPx, parseFloat(el.style.fontSize) - 1)}px`;
     if (parseFloat(el.style.fontSize) <= minPx) break;
   }
+}
+
+let ipFitDelayToken = 0;
+function scheduleIpFitAfterRender() {
+  ipFitDelayToken += 1;
+  const token = ipFitDelayToken;
+  setTimeout(() => {
+    if (token !== ipFitDelayToken) return;
+    fitIpHeading();
+  }, 280);
 }
 
 function renderClientSections(client) {
