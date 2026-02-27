@@ -45,6 +45,7 @@ body {
     font: 15px/24px "Bitstream Vera Sans Mono", "Anonymous Pro", "Consolas", monospace;
     text-shadow: var(--theme-text-shadow);
     letter-spacing: -0.01em;
+    transition: background-color 0.25s ease-out, color 0.25s ease-out;
 }
 
 /* Dark mode: same dots image as light, inverted (white→black) like arrow */
@@ -85,6 +86,7 @@ a {
     border-bottom: 1px dotted var(--theme-typing-bg);
     background: var(--theme-link-bg);
     color: var(--theme-link-color);
+    transition: background-color 0.25s ease-out, color 0.25s ease-out, border-color 0.25s ease-out;
 }
 
 a:hover {
@@ -98,6 +100,7 @@ a:hover {
     width: 8px;
     text-indent: -999em;
     background: var(--theme-typing-bg);
+    transition: background-color 0.25s ease-out;
     -webkit-animation: flick 1s infinite;
     -moz-animation: flick 1s infinite;
     -ms-animation: flick 1s infinite;
@@ -214,32 +217,32 @@ a:hover {
     left: auto;
     top: auto;
     z-index: 100;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     padding: 0;
-    border: 1px solid var(--theme-typing-bg);
+    border: 2px solid var(--theme-typing-bg);
     border-radius: 50%;
     background: var(--theme-bg);
     color: var(--theme-text);
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.5;
-    transition: opacity 0.2s, background 0.2s, border-color 0.2s;
+    opacity: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.25s ease-out, color 0.25s ease-out, border-color 0.25s ease-out;
 }
 .theme-toggle:hover {
-    opacity: 1;
     background: var(--theme-link-bg);
     color: var(--theme-link-color);
     border-color: var(--theme-link-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 .theme-toggle:focus {
     outline: 2px solid var(--theme-link-hover-bg);
     outline-offset: 2px;
-    opacity: 1;
 }
 
 @media (max-width: 550px) {
