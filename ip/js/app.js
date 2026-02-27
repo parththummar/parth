@@ -248,16 +248,34 @@ function fitIpHeading() {
   const el = els.ip;
   if (!el) return;
 
-  const text = (el.textContent || '').trim();
-  const isPlaceholder = /^(loading|\.\.\.|—)$/i.test(text) || text.length < 8;
+  const rawText = (el.dataset.asciiFinal ?? el.textContent ?? '').trim();
+  const isPlaceholder = /^(loading|\.\.\.|—)$/i.test(rawText) || rawText.length < 8;
   const maxPx = isPlaceholder ? 20 : 36;
   const minPx = 14;
   el.style.fontSize = `${maxPx}px`;
 
-  // Shrink until the text fits the hero content width.
-  while (el.scrollWidth > el.clientWidth && parseFloat(el.style.fontSize) > minPx) {
-    el.style.fontSize = `${Math.max(minPx, parseFloat(el.style.fontSize) - 1)}px`;
-    if (parseFloat(el.style.fontSize) <= minPx) break;
+  // Size to the longest line (e.g. IPv6) so both lines fit without overflow.
+  const lines = rawText.split('\n').map((s) => s.trim()).filter(Boolean);
+  const longestLine = lines.length ? lines.reduce((a, b) => (a.length >= b.length ? a : b)) : rawText;
+
+  if (longestLine.length > 0 && !isPlaceholder) {
+    const measure = document.createElement('span');
+    measure.setAttribute('aria-hidden', 'true');
+    const cs = getComputedStyle(el);
+    measure.style.cssText = 'position:absolute;left:-9999px;top:0;white-space:nowrap;visibility:hidden;' +
+      `font-family:${cs.fontFamily};font-size:${el.style.fontSize || cs.fontSize};font-weight:${cs.fontWeight};letter-spacing:${cs.letterSpacing};`;
+    measure.textContent = longestLine;
+    el.parentElement?.appendChild(measure);
+    while (measure.scrollWidth > el.clientWidth && parseFloat(el.style.fontSize) > minPx) {
+      const next = Math.max(minPx, parseFloat(el.style.fontSize) - 1);
+      el.style.fontSize = `${next}px`;
+      measure.style.fontSize = `${next}px`;
+    }
+    measure.remove();
+  } else {
+    while (el.scrollWidth > el.clientWidth && parseFloat(el.style.fontSize) > minPx) {
+      el.style.fontSize = `${Math.max(minPx, parseFloat(el.style.fontSize) - 1)}px`;
+    }
   }
 }
 
@@ -402,14 +420,14 @@ function copyToClipboard(text) {
   }
 }
 
-function getHeroIpOnlyText() {
-  const el = document.getElementById('ip-address');
-  const raw = (el?.textContent ?? '').trim();
-  return raw
-    .split('\n')
-    .map((line) => line.replace(/^(IPv6|IPv4)\s+/i, '').trim())
-    .filter((s) => s && s !== 'Not available' && s !== 'LOADING...' && s !== 'UNAVAILABLE')
-    .join('\n');
+function getIpByFamily(family) {
+  const data = state.ipApi;
+  if (!data) return null;
+  const v = family === 'v4' ? data.ipv4 : data.ipv6;
+  if (v != null && v !== '' && v !== 'N/A' && v !== 'Not available') return v;
+  if (family === 'v4' && data.ip?.includes('.')) return data.ip;
+  if (family === 'v6' && data.ip?.includes(':')) return data.ip;
+  return null;
 }
 
 function bindSectionCopyButtons() {
@@ -417,8 +435,14 @@ function bindSectionCopyButtons() {
     btn.addEventListener('click', async () => {
       const iconHtml = btn.innerHTML;
       let text;
-      if (btn.id === 'hero-copy-ip-btn') {
-        text = getHeroIpOnlyText();
+      const copyIp = btn.getAttribute('data-copy-ip');
+      if (copyIp === 'v4' || copyIp === 'v6') {
+        text = getIpByFamily(copyIp);
+        if (!text) {
+          btn.innerHTML = 'N/A';
+          setTimeout(() => { btn.innerHTML = iconHtml; }, 1500);
+          return;
+        }
       } else {
         const section = btn.getAttribute('data-copy-section');
         if (!section) return;
