@@ -104,6 +104,7 @@ a:hover {
     background-position: 0 -30px;
 }
 
+/*
 .social-links li a.twitter {
     background-position: -55px 0;
     width: 20px;
@@ -112,6 +113,7 @@ a:hover {
 .social-links li a.twitter:hover {
     background-position: -55px -30px;
 }
+*/
 
 .social-links li a.facebook {
     background-position: -79px 0;
