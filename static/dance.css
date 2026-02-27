@@ -58,7 +58,8 @@ html[data-theme="dark"] body::before {
     inset: 0;
     z-index: -1;
     background: url('subtle_dots.png') repeat;
-    filter: invert(1);
+    /* invert (white→black) then brighten so dots are visible light grey */
+    filter: invert(1) brightness(2.5);
     pointer-events: none;
 }
 
