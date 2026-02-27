@@ -1,6 +1,34 @@
 /* C to the S to the S */
 @import 'keyframe.css';
 
+:root {
+    --theme-bg: #f9f9f9;
+    --theme-bg-image: url('subtle_dots.png');
+    --theme-bg-size: auto;
+    --theme-text: #222;
+    --theme-text-shadow: 0 1px 1px rgba(0,0,0,.25);
+    --theme-link-bg: #111;
+    --theme-link-color: #fff;
+    --theme-link-hover-bg: #84a403;
+    --theme-typing-bg: #ccc;
+    --theme-arrow-filter: none;
+    --theme-social-filter: none;
+}
+
+html[data-theme="dark"] {
+    --theme-bg: #0d1117;
+    --theme-bg-image: url('subtle_dots.png');
+    --theme-bg-size: auto;
+    --theme-text: #e6edf3;
+    --theme-text-shadow: 0 1px 1px rgba(0,0,0,.5);
+    --theme-link-bg: #30363d;
+    --theme-link-color: #fff;
+    --theme-link-hover-bg: #238636;
+    --theme-typing-bg: #8b949e;
+    --theme-arrow-filter: invert(1) brightness(0.5);
+    --theme-social-filter: invert(1) brightness(0.95);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -9,12 +37,28 @@
 }
 
 body {
-    background: #f9f9f9 url('subtle_dots.png') repeat;
-    color: #222;
+    background: var(--theme-bg) var(--theme-bg-image) repeat;
+    background-size: var(--theme-bg-size);
+    background-color: var(--theme-bg);
+    color: var(--theme-text);
     
     font: 15px/24px "Bitstream Vera Sans Mono", "Anonymous Pro", "Consolas", monospace;
-    text-shadow: 0 1px 1px rgba(0,0,0,.25);
+    text-shadow: var(--theme-text-shadow);
     letter-spacing: -0.01em;
+}
+
+/* Dark mode: same dots image as light, inverted (white→black) like arrow */
+html[data-theme="dark"] body {
+    background-image: none;
+}
+html[data-theme="dark"] body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: url('subtle_dots.png') repeat;
+    filter: invert(1);
+    pointer-events: none;
 }
 
 ul.content {
@@ -36,16 +80,16 @@ ul li {
 
 a {
     text-decoration: none;
-    color: #111;
+    color: var(--theme-link-color);
     font-weight: bold;
-    border-bottom: 1px dotted #ccc;
-    background: #111;
-    color: #fff;
+    border-bottom: 1px dotted var(--theme-typing-bg);
+    background: var(--theme-link-bg);
+    color: var(--theme-link-color);
 }
 
 a:hover {
-    background: #84a403;
-    color: #fff;
+    background: var(--theme-link-hover-bg);
+    color: var(--theme-link-color);
 }
 
 .typing {
@@ -53,7 +97,7 @@ a:hover {
     display: inline-block;
     width: 8px;
     text-indent: -999em;
-    background: #ccc;
+    background: var(--theme-typing-bg);
     -webkit-animation: flick 1s infinite;
     -moz-animation: flick 1s infinite;
     -ms-animation: flick 1s infinite;
@@ -70,6 +114,7 @@ a:hover {
     position: absolute;
     left: -108px;
     animation: arrow 16s 1;
+    filter: var(--theme-arrow-filter);
 }
 
 .social-links {
@@ -94,6 +139,7 @@ a:hover {
     background: url('social_links.png') no-repeat;
     text-decoration: none;
     border: 0;
+    filter: var(--theme-social-filter);
 }
 
 .social-links li a.thejibe {
@@ -159,6 +205,42 @@ a:hover {
     
     color: #50657b;
 }*/
+
+/* Theme toggle - subtle, bottom-right */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    left: auto;
+    top: auto;
+    z-index: 100;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--theme-typing-bg);
+    border-radius: 50%;
+    background: var(--theme-bg);
+    color: var(--theme-text);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+    transition: opacity 0.2s, background 0.2s, border-color 0.2s;
+}
+.theme-toggle:hover {
+    opacity: 1;
+    background: var(--theme-link-bg);
+    color: var(--theme-link-color);
+    border-color: var(--theme-link-bg);
+}
+.theme-toggle:focus {
+    outline: 2px solid var(--theme-link-hover-bg);
+    outline-offset: 2px;
+    opacity: 1;
+}
 
 @media (max-width: 550px) {
     body {
