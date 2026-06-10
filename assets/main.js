@@ -19,14 +19,19 @@
     navLinks[a.getAttribute('data-stage-link')] = a;
   });
 
-  /* ── Stage stamps: precomputed "pipeline trace" timestamps (T0 = page load) ── */
-  var t0 = new Date();
-  function stampTime(n) {
-    var d = new Date(t0.getTime() + n * 347);
+  /* ── Stage stamps: each node records the moment the visitor reaches it ── */
+  function stampNow() {
+    var d = new Date();
     function pad(x, w) { return String(x).padStart(w || 2, '0'); }
     return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + pad(d.getMilliseconds(), 3);
   }
-  var stamps = STAGES.map(function (id, i) { return stampTime(i); });
+
+  /* ── Order id year: PT-2013-<current year>, renews itself every January ── */
+  var thisYear = String(new Date().getFullYear());
+  var orderYear = document.getElementById('order-year');
+  if (orderYear) orderYear.textContent = thisYear;
+  var packetLabel = document.getElementById('packet-label');
+  if (packetLabel) packetLabel.textContent = '#PT-2013-' + thisYear;
 
   /* ── Live "in_transit" uptime in the hero payload ── */
   var uptimeEl = document.getElementById('uptime');
@@ -92,7 +97,7 @@
         stamped[id] = on;
         sec.classList.toggle('is-stamped', on);
         var stampEl = sec.querySelector('[data-stamp]');
-        if (stampEl) stampEl.textContent = on ? stamps[i] : 'PENDING';
+        if (stampEl) stampEl.textContent = on ? stampNow() : 'PENDING';
       }
       if (on) current = id;
     });

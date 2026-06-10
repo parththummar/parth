@@ -256,9 +256,10 @@ section[data-stage="synced"] { --stage-color: var(--blue); }
 }
 .packet.is-visible { opacity: 1; }
 .packet__label {
-  position: absolute; right: 24px; top: 2px;
+  position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
   font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
   color: var(--blue); white-space: nowrap;
+  background: var(--bg); padding: 1px 4px; border-radius: 3px;
   display: none;
 }
 @media (min-width: 1024px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
@@ -357,6 +358,13 @@ section[data-stage="synced"] { --stage-color: var(--blue); }
   margin-left: auto; flex: none;
   font-size: 10px; color: var(--muted); letter-spacing: 0.06em;
 }
+.cl-icon {
+  flex: none; width: 16px; height: 16px;
+  fill: none; stroke: var(--green); stroke-width: 1.3;
+  stroke-linejoin: round; stroke-linecap: round;
+}
+.cl-icon--blue { stroke: var(--blue); }
+.cl-badge { flex: none; width: 28px; height: 28px; }
 @media (prefers-reduced-motion: no-preference) {
   .js .checklist__row { opacity: 0; transform: translateY(8px); }
   .js .is-revealed .checklist__row {
@@ -783,6 +791,22 @@ html:not(.js) .pcard__toggle { display: none; }
   .trace__row { grid-template-columns: 110px 1fr; }
   .seq__cells button { width: 24px; height: 24px; }
   .after__foot { flex-direction: column; }
+}
+
+/* ════════════════ Print: a clean black-on-white résumé ════════════════ */
+@media print {
+  :root { --bg: #fff; --surface: #fff; --raised: #fff; --text: #000; --muted: #444; --border: #bbb; }
+  body { background: #fff; color: #000; font-size: 12pt; }
+  .tracking, .packet, .rail, .node, .hero__cue, .seq, .after__hint,
+  .pcard__toggle, .copy-btn, .palette, .skip-link { display: none !important; }
+  .stage { padding-top: 32px; padding-bottom: 32px; }
+  .stage > * { margin-left: 0 !important; }
+  .hero { min-height: 0; padding: 24px 0; }
+  /* expand all project details for the printed page */
+  .js .pcard__detail { grid-template-rows: 1fr !important; }
+  .chip--pass, .chip--violet, .chip--captured { color: #fff !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  a { color: #000; }
+  .contact__links a::after { content: " (" attr(href) ")"; font-size: 10px; color: #444; }
 }
 
 /* ════════════════ Reduced motion: kill everything ════════════════ */

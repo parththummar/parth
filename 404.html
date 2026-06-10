@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" class="js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — Order Not Found · Parth Thummar</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  .nf {
+    min-height: 100svh;
+    display: flex; flex-direction: column; justify-content: center;
+    max-width: 720px;
+  }
+  .nf .payload { margin: 32px 0; }
+  .nf__back {
+    font-family: var(--mono); font-size: 13px;
+    color: var(--blue); text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 0; align-self: flex-start;
+  }
+  .nf__back:hover { border-color: var(--blue); }
+</style>
+</head>
+<body>
+<main class="nf wrap">
+  <p class="kicker kicker--amber">EVENT: order.lookup_failed — 404</p>
+  <h1>This route was never registered.</h1>
+
+  <div class="payload">
+    <div class="payload__bar" aria-hidden="true">
+      <span>GET /this/page</span>
+      <span class="chip chip--amber-outline">404 NOT FOUND</span>
+    </div>
+<pre class="payload__json"><code>{
+  <span class="j-key">"error"</span>: <span class="j-str">"order_not_found"</span>,
+  <span class="j-key">"hint"</span>: <span class="j-str">"the order you are looking for ships from the homepage"</span>,
+  <span class="j-key">"retry_url"</span>: <span class="j-str">"https://parththummar.com/"</span>
+}</code></pre>
+  </div>
+
+  <a class="nf__back" href="/">← Back to the pipeline</a>
+</main>
+</body>
+</html>

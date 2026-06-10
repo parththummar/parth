@@ -4,8 +4,9 @@ Personal site of Parth Thummar — Sr. Backend Developer & eCommerce Solutions A
 
 ## Concept
 
-The page is a single ecommerce order, **PT-2013-0001**, tracked through the kind of
-fulfillment pipeline I build for a living. Each lifecycle stage is a résumé section:
+The page is a single ecommerce order, **PT-2013-&lt;current year&gt;** (the year part
+updates itself every January), tracked through the kind of fulfillment pipeline I
+build for a living. Each lifecycle stage is a résumé section:
 
 | Stage | Section |
 |---|---|
