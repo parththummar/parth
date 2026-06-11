@@ -1,9 +1,25 @@
 /* ════════════════════════════════════════════════════════════════
-   parththummar.com — "PT-2013-0001 / The Order Journey"
+   parththummar.com — "PT-2013-<current year> / The Order Journey"
    One ecommerce order tracked through a fulfillment pipeline.
    Vanilla CSS. No frameworks. Final states are the default;
    the .js class on <html> opts elements into pre-animation states.
    ════════════════════════════════════════════════════════════════ */
+
+/* ── Fonts: self-hosted variable woff2 (latin), no third-party requests ── */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("fonts/spacegrotesk-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("fonts/jetbrainsmono-var.woff2") format("woff2");
+}
 
 /* ── Tokens ── */
 :root {
@@ -674,6 +690,7 @@ html:not(.js) .pcard__toggle { display: none; }
 .seq__transport {
   display: flex; align-items: center; gap: 16px;
   padding-left: 48px;
+  min-height: 44px; /* reserves the JS-injected PLAY button's height */
 }
 .play-btn {
   font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em;
@@ -695,7 +712,7 @@ html:not(.js) .pcard__toggle { display: none; }
 .exit { color: var(--green); }
 .after__hint { display: none; }
 @media (hover: hover) and (pointer: fine) {
-  .after__hint { display: block; }
+  .js .after__hint { display: block; }
 }
 
 /* ════════════════ Command palette ════════════════ */

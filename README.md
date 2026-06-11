@@ -23,15 +23,16 @@ scroll. The footer hides a playable Web Audio step sequencer (the synth hobby is
 
 The payload also resolves a `shipping_to` block for the visitor — approximate city
 (one anonymous ipapi.co/ipwho.is lookup), local time, weather (open-meteo), device,
-viewport, locale, timezone, and connection type. Everything is resolved client-side,
-rendered once, and never stored; the delivery confirmation signs off with the
-visitor's city. All lookups fail silently and the block simply omits what it
-couldn't resolve.
+viewport, locale, timezone, and connection type. Device details come straight from
+browser APIs; the geo and weather lookups are anonymous third-party calls whose
+results are rendered once and never stored — no cookies, no identifiers. The block
+renders instantly with placeholders (zero layout shift) and patches values in as
+lookups resolve; failures degrade to "unknown".
 
 ## Stack
 
 - Vanilla HTML / CSS / JS — no frameworks, no build step, no trackers
-- Two Google font families (Space Grotesk, JetBrains Mono)
+- Self-hosted variable fonts (Space Grotesk, JetBrains Mono — 54KB total, no Google Fonts requests)
 - Hosted on GitHub Pages (`CNAME` → parththummar.com)
 
 ## Behaviour notes

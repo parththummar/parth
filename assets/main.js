@@ -46,7 +46,11 @@
       uptimeEl.textContent = years + 'y ' + days + 'd ' + pad(h) + ':' + pad(m) + ':' + pad(sec);
     };
     tick();
-    setInterval(tick, 1000);
+    var uptimeTimer = setInterval(tick, 1000);
+    document.addEventListener('visibilitychange', function () {
+      clearInterval(uptimeTimer);
+      if (!document.hidden) { tick(); uptimeTimer = setInterval(tick, 1000); }
+    });
   }
 
   /* ── Capture chip: AUTH HELD -> CAPTURED (initialised before the first
@@ -71,8 +75,12 @@
   var rail = document.getElementById('rail');
   var progressFill = document.getElementById('progress-fill');
   var chipLabel = document.getElementById('stage-chip-label');
+  var pipelineEl = document.querySelector('.pipeline');
+  var deliveredNode = sections[6] && sections[6].querySelector('.node');
   var stamped = {};
   var ticking = false;
+  var needsReposition = false;
+  var lastCurrent = null;
 
   function activationLine() { return window.innerHeight * 0.45; }
 
@@ -84,6 +92,7 @@
 
   function update() {
     ticking = false;
+    if (needsReposition) { needsReposition = false; positionPacket(); }
     var line = activationLine();
     var current = 'placed';
 
@@ -113,24 +122,20 @@
     if (chipLabel) {
       chipLabel.textContent = 'Stage ' + String(currentIdx + 1).padStart(2, '0') + '/07 — ' + STAGE_LABELS[currentIdx];
     }
-    if (progressFill) {
+    if (progressFill && window.innerWidth < 768) {
       var doc = document.documentElement;
       var max = doc.scrollHeight - window.innerHeight;
       var pct = max > 0 ? (window.scrollY / max) * 100 : 0;
       progressFill.style.setProperty('--scroll-progress', pct.toFixed(1) + '%');
-      progressFill.style.background = STAGE_COLORS[current];
+      if (current !== lastCurrent) progressFill.style.background = STAGE_COLORS[current];
     }
+    lastCurrent = current;
 
     // packet: ride the rail between the pipeline start and the terminal node
-    if (packet) {
-      var pipeline = document.querySelector('.pipeline');
-      var delivered = sections[6];
-      if (pipeline && delivered) {
-        var pTop = pipeline.getBoundingClientRect().top;
-        var dNode = delivered.querySelector('.node');
-        var docked = dNode ? dNode.getBoundingClientRect().top < line : false;
-        packet.classList.toggle('is-visible', pTop < line && !docked);
-      }
+    if (packet && pipelineEl && deliveredNode) {
+      var pTop = pipelineEl.getBoundingClientRect().top;
+      var docked = deliveredNode.getBoundingClientRect().top < line;
+      packet.classList.toggle('is-visible', pTop < line && !docked);
     }
 
     // capture chip flips AUTH HELD -> CAPTURED when the paid stage activates
@@ -141,7 +146,7 @@
     if (!ticking) { ticking = true; requestAnimationFrame(update); }
   }
   window.addEventListener('scroll', requestUpdate, { passive: true });
-  window.addEventListener('resize', function () { positionPacket(); requestUpdate(); });
+  window.addEventListener('resize', function () { needsReposition = true; requestUpdate(); });
   positionPacket();
   update();
 
@@ -349,6 +354,7 @@
     var allCells = cells.kick.concat(cells.blip);
 
     allCells.forEach(function (btn) {
+      btn.removeAttribute('disabled'); // ships disabled so no-JS visitors get no dead controls
       btn.addEventListener('click', function () {
         var on = btn.getAttribute('aria-checked') !== 'true';
         btn.setAttribute('aria-checked', String(on));
@@ -421,6 +427,7 @@
       setPlayhead(-1);
       playBtn.textContent = 'PLAY';
       playBtn.setAttribute('aria-label', 'Play sequencer loop');
+      if (ctx && ctx.state === 'running') ctx.suspend(); // release the audio thread
     }
     playBtn.addEventListener('click', function () {
       if (playing) { stop(); return; }
@@ -498,7 +505,38 @@
       return 'thunderstorm';
     }
 
-    var geoP = fetchJson('https://ipapi.co/json/', 3000)
+    // Render immediately with placeholders so the hero never shifts;
+    // the network results patch values in place (same line count either way).
+    var fields = [
+      ['city', 'resolving…', 'ship-city'],
+      ['local_time', localTime],
+      ['weather', 'looking outside…', 'ship-weather'],
+      ['device', deviceType + ' · ' + os + ' · ' + browser],
+      ['viewport', window.innerWidth + '×' + window.innerHeight],
+      ['locale', navigator.language || 'en'],
+      ['tz', tz]
+    ];
+    if (conn) fields.push(['connection', conn]);
+    fields.push(['_privacy', 'anonymous lookup, nothing stored']);
+
+    // keys are hardcoded; every value passes through esc() here or textContent below
+    var lines = ['  <span class="j-key">"shipping_to"</span>: {'];
+    fields.forEach(function (f, i) {
+      var cls = f[0] === '_privacy' ? 'j-mut' : 'j-str';
+      var idAttr = f[2] ? ' id="' + f[2] + '"' : '';
+      lines.push('    <span class="j-key">"' + f[0] + '"</span>: <span class="' + cls + '"' + idAttr + '>"' + esc(f[1]) + '"</span>' + (i < fields.length - 1 ? ',' : ''));
+    });
+    lines.push('  },');
+    shipSlot.innerHTML = lines.map(function (l, i) {
+      return '<span class="ship-line" style="--i:' + i + '">' + l + '\n</span>';
+    }).join('');
+
+    function patch(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = '"' + val + '"';
+    }
+
+    fetchJson('https://ipapi.co/json/', 3000)
       .then(function (d) {
         if (!d || !d.city) throw new Error('no city');
         return { city: d.city, region: d.region_code || d.region || '', country: d.country_code || '', lat: d.latitude, lon: d.longitude };
@@ -509,53 +547,30 @@
           return { city: d.city, region: (d.region_code || d.region || ''), country: d.country_code || '', lat: d.latitude, lon: d.longitude };
         });
       })
-      .catch(function () { return null; });
-
-    geoP.then(function (geo) {
-      var weatherP = (geo && geo.lat != null)
-        ? fetchJson('https://api.open-meteo.com/v1/forecast?latitude=' + geo.lat + '&longitude=' + geo.lon + '&current_weather=true', 3000)
-            .then(function (d) {
-              var w = d && d.current_weather;
-              return w ? weatherLabel(w.weathercode) + ' · ' + Math.round(w.temperature) + '°C' : null;
-            })
-            .catch(function () { return null; })
-        : Promise.resolve(null);
-
-      weatherP.then(function (weather) {
-        var fields = [];
-        if (geo) {
-          fields.push(['city', geo.city + (geo.region ? ', ' + geo.region : '') + (geo.country ? ', ' + geo.country : '')]);
+      .catch(function () { return null; })
+      .then(function (geo) {
+        if (!geo) {
+          patch('ship-city', 'somewhere on the internet');
+          patch('ship-weather', 'unknown');
+          return;
         }
-        fields.push(['local_time', localTime]);
-        if (weather) fields.push(['weather', weather]);
-        fields.push(['device', deviceType + ' · ' + os + ' · ' + browser]);
-        fields.push(['viewport', window.innerWidth + '×' + window.innerHeight]);
-        fields.push(['locale', navigator.language || 'en']);
-        fields.push(['tz', tz]);
-        if (conn) fields.push(['connection', conn]);
-        fields.push(['_privacy', 'resolved client-side, never stored']);
-
-        // keys are hardcoded; every value passes through esc() above
-        var lines = ['  <span class="j-key">"shipping_to"</span>: {'];
-        fields.forEach(function (f, i) {
-          var cls = f[0] === '_privacy' ? 'j-mut' : 'j-str';
-          lines.push('    <span class="j-key">"' + f[0] + '"</span>: <span class="' + cls + '">"' + esc(f[1]) + '"</span>' + (i < fields.length - 1 ? ',' : ''));
-        });
-        lines.push('  },');
-        shipSlot.innerHTML = lines.map(function (l, i) {
-          return '<span class="ship-line" style="--i:' + i + '">' + l + '\n</span>';
-        }).join('');
+        patch('ship-city', geo.city + (geo.region ? ', ' + geo.region : '') + (geo.country ? ', ' + geo.country : ''));
 
         // the delivery confirmation now knows where it landed
-        if (geo) {
-          var kicker = document.getElementById('delivered-kicker');
-          if (kicker) {
-            var signed = 'STATUS: DELIVERED — signed_for_by: you (' + geo.city + (geo.region ? ', ' + geo.region : '') + ')';
-            kicker.setAttribute('data-default', signed);
-            kicker.textContent = signed;
-          }
+        var kicker = document.getElementById('delivered-kicker');
+        if (kicker) {
+          var signed = 'STATUS: DELIVERED — signed_for_by: you (' + geo.city + (geo.region ? ', ' + geo.region : '') + ')';
+          kicker.setAttribute('data-default', signed);
+          kicker.textContent = signed;
         }
+
+        if (geo.lat == null) { patch('ship-weather', 'unknown'); return; }
+        fetchJson('https://api.open-meteo.com/v1/forecast?latitude=' + geo.lat + '&longitude=' + geo.lon + '&current_weather=true', 3000)
+          .then(function (d) {
+            var w = d && d.current_weather;
+            patch('ship-weather', w ? weatherLabel(w.weathercode) + ' · ' + Math.round(w.temperature) + '°C' : 'unknown');
+          })
+          .catch(function () { patch('ship-weather', 'unknown'); });
       });
-    });
   }
 })();

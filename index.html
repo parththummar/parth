@@ -4,17 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Parth Thummar — Sr. Backend Developer &amp; eCommerce Solutions Architect</title>
-<meta name="description" content="Parth Thummar — eCommerce Solutions Architect and 3× Adobe Certified Expert. Track order PT-2013 through thirteen years of commerce infrastructure: RiteAid, Malin+Goetz, Wabash, Maria Tash and 70+ more.">
+<meta name="description" content="eCommerce Solutions Architect, 3× Adobe Certified Expert. Thirteen years of Adobe Commerce backends for RiteAid, Malin+Goetz, Maria Tash and 70+ clients.">
 <meta name="author" content="Parth Thummar">
 <meta name="theme-color" content="#0B1117">
 <link rel="canonical" href="https://parththummar.com/">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://parththummar.com/">
 <meta property="og:title" content="Parth Thummar — Sr. Backend Developer &amp; eCommerce Solutions Architect">
-<meta property="og:description" content="One order, thirteen years in transit. Backend architecture for Adobe Commerce at enterprise scale — RiteAid, Malin+Goetz, Wabash National, Maria Tash and 70+ more.">
+<meta property="og:description" content="One order, thirteen years in transit. Adobe Commerce backends for RiteAid, Malin+Goetz, Wabash National, Maria Tash — part of a 70+ client history.">
 <meta property="og:image" content="https://parththummar.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -24,9 +25,8 @@
 <meta name="twitter:title" content="Parth Thummar — Sr. Backend Developer &amp; eCommerce Solutions Architect">
 <meta name="twitter:description" content="One order, thirteen years in transit. Backend architecture for Adobe Commerce at enterprise scale.">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="preload" href="assets/fonts/spacegrotesk-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrainsmono-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/style.css">
 
 <script>document.documentElement.classList.add('js');</script>
@@ -127,7 +127,7 @@
     <span class="j-key">"qty"</span>: <span class="j-num">1</span>
   }],
 <span id="ship-slot"></span>  <span class="j-key">"placed_at"</span>: <span class="j-str">"2013-06-01T09:00:00Z"</span>,
-  <span class="j-key">"in_transit"</span>: <span class="j-str">"<span id="uptime">13+ years</span>"</span>,
+  <span class="j-key">"time_in_transit"</span>: <span class="j-str">"<span id="uptime">13+ years</span>"</span>,
   <span class="j-key">"status"</span>: <span class="j-str">"in_transit"</span>,
   <span class="j-key">"carrier"</span>: <span class="j-str">"rabbitmq"</span>
 }</code></pre>
@@ -190,7 +190,7 @@
       <span class="node" aria-hidden="true"><span class="node__stamp" data-stamp>PENDING</span></span>
       <p class="kicker kicker--blue">STAGE 04 — order.synced</p>
       <h2 id="synced-heading">Routed through production systems.</h2>
-      <p class="stage__lede">Six integration hops. Each one a brand most developers would recognize — expand a card for the full trace.</p>
+      <p class="stage__lede">Six integration hops, from pharmacy shelves to semi-trailers — expand a card for the full trace.</p>
 
       <!-- Wabash -->
       <article class="pcard card" data-card>
@@ -260,7 +260,7 @@
           </div>
           <dl class="pcard__meta">
             <div><dt>Role</dt><dd>Sr. Adobe Commerce Developer</dd></div>
-            <div><dt>Stack</dt><dd>Magento 2 Cloud · AEM · REST · NewRelic</dd></div>
+            <div><dt>Stack</dt><dd>Magento 2 Cloud · AEM · REST · New Relic</dd></div>
             <div><dt>Scale</dt><dd>2,400+ US stores</dd></div>
             <div><dt>Years</dt><dd>2022</dd></div>
           </dl>
@@ -281,7 +281,7 @@
               <li>Integrated AEM with the Magento backend through custom REST adapters — eliminated 8 hours/week of content-sync drift.</li>
               <li>Built the BOPIS store-selector backend on geolocation APIs, rolled out to all 2,400+ locations.</li>
               <li>Auto store detection cut checkout friction and lifted in-store pickup conversion.</li>
-              <li>Held 99.9% uptime through an 8-week post-launch hypercare rotation on NewRelic and rapid hotfixes.</li>
+              <li>Held 99.9% uptime through an 8-week post-launch hypercare rotation on New Relic and rapid hotfixes.</li>
             </ul>
           </div>
         </div>
@@ -301,7 +301,7 @@
             <p class="pcard__summary">Five years owning the backend of a five-storefront Magento platform for the NYC apothecary brand — through upgrades, a full infrastructure migration, and a fraud wave.</p>
             <ul class="chips">
               <li>$20M+ annual revenue</li>
-              <li>Zero-downtime migration, 85% under budget</li>
+              <li>Zero-data-loss migration, 85% under budget</li>
               <li>Anti-carding module killed $50K/mo fraud</li>
             </ul>
           </div>
@@ -422,7 +422,7 @@
             <ul class="pcard__bullets">
               <li>Integrated Teamwork ERP V6 through cron-based queues — 10K+ orders and 30K+ products a day at 99.9% accuracy.</li>
               <li>Built the Global-E international shipping backend: localized pricing, tax, and customs duty for 100+ countries.</li>
-              <li>Led the Magento 2.4.5 → 2.4.6 upgrade — 35+ CVEs patched, +15 Core Web Vitals.</li>
+              <li>Led the Magento 2.4.5 → 2.4.6 upgrade — 35+ CVEs patched, +15 Lighthouse performance points.</li>
               <li>Ran triage for PDP/PLP defects across option selection and category behavior.</li>
             </ul>
           </div>
@@ -534,7 +534,7 @@
         <li><span>Swarovski</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>Kleenex</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>Dollar General</span><span class="shipped">✓ SHIPPED</span></li>
-        <li><span>Pepsico / RockStar</span><span class="shipped">✓ SHIPPED</span></li>
+        <li><span>PepsiCo / Rockstar</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>RiteAid</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>Topps</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>Zildjian <em class="aside">(yes, the cymbals)</em></span><span class="shipped">✓ SHIPPED</span></li>
@@ -597,27 +597,27 @@
         <div class="seq__row" data-voice="kick">
           <span class="seq__label" id="seq-label-kick">KICK</span>
           <div class="seq__cells" role="group" aria-labelledby="seq-label-kick">
-            <button type="button" role="switch" aria-checked="true"  aria-label="Kick step 1" class="on"></button>
-            <button type="button" role="switch" aria-checked="false" aria-label="Kick step 2"></button>
-            <button type="button" role="switch" aria-checked="false" aria-label="Kick step 3"></button>
-            <button type="button" role="switch" aria-checked="true"  aria-label="Kick step 4" class="on"></button>
-            <button type="button" role="switch" aria-checked="false" aria-label="Kick step 5"></button>
-            <button type="button" role="switch" aria-checked="false" aria-label="Kick step 6"></button>
-            <button type="button" role="switch" aria-checked="true"  aria-label="Kick step 7" class="on"></button>
-            <button type="button" role="switch" aria-checked="true"  aria-label="Kick step 8" class="on"></button>
+            <button type="button" disabled role="switch" aria-checked="true"  aria-label="Kick step 1" class="on"></button>
+            <button type="button" disabled role="switch" aria-checked="false" aria-label="Kick step 2"></button>
+            <button type="button" disabled role="switch" aria-checked="false" aria-label="Kick step 3"></button>
+            <button type="button" disabled role="switch" aria-checked="true"  aria-label="Kick step 4" class="on"></button>
+            <button type="button" disabled role="switch" aria-checked="false" aria-label="Kick step 5"></button>
+            <button type="button" disabled role="switch" aria-checked="false" aria-label="Kick step 6"></button>
+            <button type="button" disabled role="switch" aria-checked="true"  aria-label="Kick step 7" class="on"></button>
+            <button type="button" disabled role="switch" aria-checked="true"  aria-label="Kick step 8" class="on"></button>
           </div>
         </div>
         <div class="seq__row" data-voice="blip">
           <span class="seq__label" id="seq-label-blip">BLIP</span>
           <div class="seq__cells" role="group" aria-labelledby="seq-label-blip">
-            <button type="button" role="switch" aria-checked="false" aria-label="Blip step 1"></button>
-            <button type="button" role="switch" aria-checked="false" aria-label="Blip step 2"></button>
-            <button type="button" role="switch" aria-checked="true"  aria-label="Blip step 3" class="on"></button>
-            <button type="button" role="switch" aria-checked="false" aria-label="Blip step 4"></button>
-            <button type="button" role="switch" aria-checked="false" aria-label="Blip step 5"></button>
-            <button type="button" role="switch" aria-checked="true"  aria-label="Blip step 6" class="on"></button>
-            <button type="button" role="switch" aria-checked="false" aria-label="Blip step 7"></button>
-            <button type="button" role="switch" aria-checked="true"  aria-label="Blip step 8" class="on"></button>
+            <button type="button" disabled role="switch" aria-checked="false" aria-label="Blip step 1"></button>
+            <button type="button" disabled role="switch" aria-checked="false" aria-label="Blip step 2"></button>
+            <button type="button" disabled role="switch" aria-checked="true"  aria-label="Blip step 3" class="on"></button>
+            <button type="button" disabled role="switch" aria-checked="false" aria-label="Blip step 4"></button>
+            <button type="button" disabled role="switch" aria-checked="false" aria-label="Blip step 5"></button>
+            <button type="button" disabled role="switch" aria-checked="true"  aria-label="Blip step 6" class="on"></button>
+            <button type="button" disabled role="switch" aria-checked="false" aria-label="Blip step 7"></button>
+            <button type="button" disabled role="switch" aria-checked="true"  aria-label="Blip step 8" class="on"></button>
           </div>
         </div>
       </div>
