@@ -190,7 +190,59 @@
       <span class="node" aria-hidden="true"><span class="node__stamp" data-stamp>PENDING</span></span>
       <p class="kicker kicker--blue">STAGE 04 — order.synced</p>
       <h2 id="synced-heading">Routed through production systems.</h2>
-      <p class="stage__lede">Six integration hops, from pharmacy shelves to semi-trailers — expand a card for the full trace.</p>
+      <p class="stage__lede">Seven integration hops, from musical instruments and pharmacy shelves to semi-trailers — expand a card for the full trace.</p>
+
+      <!-- American Musical Supply -->
+      <article class="pcard card" data-card>
+        <div class="pcard__bar">
+          <svg class="wave" viewBox="0 0 40 16" aria-hidden="true"><path d="M0 8 L5 8 L10 2 L15 14 L20 4 L25 12 L30 2 L35 8 L40 8"/></svg>
+          <span class="pcard__service">ams :: adobe-commerce cloud</span>
+          <span class="chip chip--green-outline">SYNC OK</span>
+        </div>
+        <div class="pcard__main">
+          <div>
+            <h3 class="pcard__client">American Musical Supply (AMS)</h3>
+            <p class="pcard__role">Sr. Adobe Commerce Developer / Backend Lead — full-time</p>
+            <p class="pcard__summary">Backend leadership on Adobe Commerce Cloud for the musical-instrument retailer — a Salesforce Marketing Cloud migration to Listrak, Synchrony financing beside Affirm, rewards at catalog scale, and AI coding guardrails for the dev team.</p>
+            <ul class="chips">
+              <li>Salesforce → Listrak cutover</li>
+              <li>20–25 SSIS feeds</li>
+              <li>~25K reward SKUs</li>
+              <li>Synchrony financing build</li>
+            </ul>
+          </div>
+          <dl class="pcard__meta">
+            <div><dt>Role</dt><dd>Sr. Adobe Commerce Developer / Backend Lead</dd></div>
+            <div><dt>Stack</dt><dd>Adobe Commerce Cloud · Listrak · SSIS · Synchrony · Fastly</dd></div>
+            <div><dt>Focus</dt><dd>Marketing integrations · financing · rewards · AI guardrails</dd></div>
+          </dl>
+        </div>
+        <button class="pcard__toggle" type="button" aria-expanded="false">
+          <span data-toggle-label>VIEW TRACE</span><span aria-hidden="true" class="pcard__plus">+</span>
+        </button>
+        <div class="pcard__detail">
+          <div class="pcard__detail-inner">
+            <div class="trace" aria-hidden="true">
+              <div class="trace__row"><span>adobe-commerce</span><i style="--w:.9;--d:0"></i></div>
+              <div class="trace__row"><span>customer-rewards</span><i style="--w:.75;--d:1"></i></div>
+              <div class="trace__row"><span>listrak-api</span><i style="--w:.65;--d:2"></i></div>
+              <div class="trace__row"><span>synchrony</span><i style="--w:.55;--d:3"></i></div>
+              <div class="trace__row"><span>release-stability</span><i style="--w:.8;--d:4"></i></div>
+            </div>
+            <ul class="pcard__bullets">
+              <li>Architected the move from Salesforce Marketing Cloud to Listrak, owning Adobe Commerce APIs for order-confirmation email, SMS notify-me, checkout opt-in, and hourly bearer-token refresh. Ran the production switch that replaced Salesforce form controllers ahead of the contract end.</li>
+              <li>Mentored migration of approximately 20–25 SSIS feeds, including SQL-side JSON grouping previously handled by Salesforce.</li>
+              <li>Drove the Synchrony financing build beside Affirm: one promo per order, a custom cipher-token settlement path outside the vendor extension, and rewards exclusion on financed orders. Worked with Synchrony on sandbox, promo-override, and daily funding-report constraints; public launch was targeted for mid-to-late January.</li>
+              <li>Set repo standards, managed settings to block secret writes and unapproved commands, and prompt-injection hooks for Claude Code and Cursor. Piloted team rollout to keep AI coding tools available while protecting credentials and production configuration.</li>
+              <li>Delivered customer rewards with standardized points, SKU-level ratios, item-level calculations, and checkout integration hardening. Scaled catalog rewards from approximately 5,000 to 25,000 SKUs, using a Fastly purge to keep PDP badges consistent.</li>
+              <li>Led feed migration planning for approximately 22,000 SKUs with hourly updates across Google, Bing, and Meta — aligning flat-file/API ingestion and delta strategies with margin tiers, price thresholds, and out-of-stock filtering.</li>
+              <li>Partnered with marketing on GA4/GTM and OneTrust compliance audits, investigating consent gating gaps and scoping fixes for tag firing, restricted data processing, cross-domain linking, and conversion inflation risks.</li>
+              <li>Owned incident-aware release execution, coordinating monitoring and communications and running time-boxed releases with observability markers and checklists.</li>
+              <li>Stabilized staging by isolating branch-related deployment failures and enforcing release-branch baselines to reduce environment churn and accelerate QA.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
 
       <!-- Wabash -->
       <article class="pcard card" data-card>
@@ -202,20 +254,19 @@
         <div class="pcard__main">
           <div>
             <h3 class="pcard__client">Wabash National</h3>
-            <p class="pcard__role">2024 – 26 · Backend Lead — headless PWA, team of 12</p>
-            <p class="pcard__summary">Adobe Commerce on Azure behind a headless PWA storefront for an industrial-transport giant — custom GraphQL schema, real-time ERP sync, and a deployment pipeline that stopped breaking.</p>
+            <p class="pcard__role">Backend Lead — Wabash Parts headless PWA</p>
+            <p class="pcard__summary">Led Adobe Commerce delivery for the Wabash Parts storefront — a headless PWA with a custom GraphQL schema, real-time ERP sync through HTI and Boomi, VIN-based parts lookup, and sprint planning and releases in Azure DevOps.</p>
             <ul class="chips">
-              <li>10K+ concurrent sessions</li>
-              <li>−40% API latency</li>
-              <li>50K+ SKUs real-time ERP sync</li>
-              <li>−30% deploy cycle</li>
+              <li>HTI / Boomi integration</li>
+              <li>~50K sellable SKUs recovered</li>
+              <li>VIN-based parts lookup</li>
+              <li>Magento 2.4.9 · PHP 8.4</li>
             </ul>
           </div>
           <dl class="pcard__meta">
             <div><dt>Role</dt><dd>Backend Lead</dd></div>
-            <div><dt>Stack</dt><dd>Adobe Commerce · PHP 8 · GraphQL · RabbitMQ · Azure</dd></div>
-            <div><dt>Team</dt><dd>12 engineers</dd></div>
-            <div><dt>Years</dt><dd>2024 – 2026</dd></div>
+            <div><dt>Stack</dt><dd>Adobe Commerce · PHP 8.4 · GraphQL · Boomi · Azure DevOps</dd></div>
+            <div><dt>Focus</dt><dd>B2B parts · ERP integration · release stability</dd></div>
           </dl>
         </div>
         <button class="pcard__toggle" type="button" aria-expanded="false">
@@ -227,14 +278,17 @@
               <div class="trace__row"><span>pwa-storefront</span><i style="--w:.95;--d:0"></i></div>
               <div class="trace__row"><span>graphql-gateway</span><i style="--w:.72;--d:1"></i></div>
               <div class="trace__row"><span>adobe-commerce</span><i style="--w:.84;--d:2"></i></div>
-              <div class="trace__row"><span>rabbitmq</span><i style="--w:.45;--d:3"></i></div>
+              <div class="trace__row"><span>boomi</span><i style="--w:.45;--d:3"></i></div>
               <div class="trace__row"><span>hti-erp</span><i style="--w:.6;--d:4"></i></div>
             </div>
             <ul class="pcard__bullets">
-              <li>Engineered 10+ custom Magento modules and the GraphQL schema powering the headless PWA frontend.</li>
-              <li>Built real-time, bi-directional sync between Adobe Commerce and HTI ERP — RabbitMQ and webhooks across 50K+ SKUs.</li>
-              <li>Cut the Azure DevOps deployment cycle 30% and rollback incidents roughly in half.</li>
-              <li>Led a 12-person team to 100% on-time sprint delivery across 19 months.</li>
+              <li>Led delivery of the Wabash Parts headless PWA and custom GraphQL schema, with sprint planning and releases managed in Azure DevOps.</li>
+              <li>Built HTI integration for products, orders, and inventory: real-time customer pricing and quantity-on-hand through Boomi, outbound order XML, and inbound catalog and inventory files. Recovered approximately 50,000 sellable SKUs dropped by a missing file chunk.</li>
+              <li>Shipped the Magento 2.4.9 upgrade on PHP 8.4, then fixed JWT session expiry, base64 customer IDs for the frontend, and an inventory-index bug that cleared stock on unrelated SKUs.</li>
+              <li>Designed admin-managed company roles and permissions with GraphQL allow/deny rules enforced in the PWA, plus a daily HTI supersession import that copies old-SKU attributes to replacement SKUs without repeat overwrites.</li>
+              <li>Drove VIN-based parts lookup (VINBOM), including assembly views and a visual trailer map. Split product calls from price calls after HTI per-SKU pricing caused page timeouts.</li>
+              <li>Scoped headless Algolia using InstantSearch from the PWA, starting with autocomplete and then product listing. Kept customer pricing and inventory out of the proposed index and dealer part numbers isolated per account.</li>
+              <li>Tightened releases by cutting from the develop branch with feature flags and blocking cherry-picks that reintroduced defects.</li>
             </ul>
           </div>
         </div>
@@ -250,7 +304,7 @@
         <div class="pcard__main">
           <div>
             <h3 class="pcard__client">RiteAid Pharmacy</h3>
-            <p class="pcard__role">2022 · Sr. Adobe Commerce Developer — via BlueAcorn / Infosys</p>
+            <p class="pcard__role">Sr. Adobe Commerce Developer — via BlueAcorn / Infosys</p>
             <p class="pcard__summary">Buy-online-pickup-in-store checkout for one of America's largest pharmacy chains — AEM front, Magento Commerce Cloud back, geolocation in between.</p>
             <ul class="chips">
               <li>BOPIS for 2,400+ stores</li>
@@ -262,7 +316,6 @@
             <div><dt>Role</dt><dd>Sr. Adobe Commerce Developer</dd></div>
             <div><dt>Stack</dt><dd>Magento 2 Cloud · AEM · REST · New Relic</dd></div>
             <div><dt>Scale</dt><dd>2,400+ US stores</dd></div>
-            <div><dt>Years</dt><dd>2022</dd></div>
           </dl>
         </div>
         <button class="pcard__toggle" type="button" aria-expanded="false">
@@ -297,7 +350,7 @@
         <div class="pcard__main">
           <div>
             <h3 class="pcard__client">Malin + Goetz</h3>
-            <p class="pcard__role">2019 – 24 · Developer → Tech Lead → Solutions Architect</p>
+            <p class="pcard__role">Developer → Tech Lead → Solutions Architect</p>
             <p class="pcard__summary">Five years owning the backend of a five-storefront Magento platform for the NYC apothecary brand — through upgrades, a full infrastructure migration, and a fraud wave.</p>
             <ul class="chips">
               <li>$20M+ annual revenue</li>
@@ -309,7 +362,6 @@
             <div><dt>Role</dt><dd>Developer → Solutions Architect</dd></div>
             <div><dt>Stack</dt><dd>Magento 2 · PHP 7/8 · Varnish · Redis · MySQL</dd></div>
             <div><dt>Arc</dt><dd>Promoted twice in five years</dd></div>
-            <div><dt>Years</dt><dd>2019 – 2024</dd></div>
           </dl>
         </div>
         <button class="pcard__toggle" type="button" aria-expanded="false">
@@ -344,7 +396,7 @@
         <div class="pcard__main">
           <div>
             <h3 class="pcard__client">Dorel Juvenile</h3>
-            <p class="pcard__role">2022 – 23 · Tech Lead — Safety 1st · Cosco Kids · Maxi-Cosi</p>
+            <p class="pcard__role">Tech Lead — Safety 1st · Cosco Kids · Maxi-Cosi</p>
             <p class="pcard__summary">Three juvenile-gear brands on Magento Commerce Cloud, fed daily by a PIM pipeline and kept alive through peak-holiday launches.</p>
             <ul class="chips">
               <li>100K+ attributes synced daily</li>
@@ -357,7 +409,6 @@
             <div><dt>Role</dt><dd>Tech Lead</dd></div>
             <div><dt>Stack</dt><dd>Magento 2 Cloud · Salsify · Klaviyo · Varnish</dd></div>
             <div><dt>Brands</dt><dd>safety1st · coscokids · maxi-cosi</dd></div>
-            <div><dt>Years</dt><dd>2022 – 2023</dd></div>
           </dl>
         </div>
         <button class="pcard__toggle" type="button" aria-expanded="false">
@@ -392,7 +443,7 @@
         <div class="pcard__main">
           <div>
             <h3 class="pcard__client">Maria Tash</h3>
-            <p class="pcard__role">2024 · Sr. Adobe Commerce Developer — via NextBits Inc.</p>
+            <p class="pcard__role">Sr. Adobe Commerce Developer — via NextBits Inc.</p>
             <p class="pcard__summary">Global fine-jewelry commerce: cross-border selling to 100+ countries with localized pricing, tax, and customs duty, backed by a high-volume ERP queue.</p>
             <ul class="chips">
               <li>Cross-border to 100+ countries</li>
@@ -404,7 +455,6 @@
             <div><dt>Role</dt><dd>Sr. Adobe Commerce Developer</dd></div>
             <div><dt>Stack</dt><dd>Magento 2 · Global-E · Teamwork ERP · Redis</dd></div>
             <div><dt>Category</dt><dd>Luxury / fine jewelry DTC</dd></div>
-            <div><dt>Years</dt><dd>2024</dd></div>
           </dl>
         </div>
         <button class="pcard__toggle" type="button" aria-expanded="false">
@@ -439,7 +489,7 @@
         <div class="pcard__main">
           <div>
             <h3 class="pcard__client">Scrip Companies</h3>
-            <p class="pcard__role">2018 – 21 · Sr. Magento Developer — B2B eCommerce</p>
+            <p class="pcard__role">Sr. Magento Developer — B2B eCommerce</p>
             <p class="pcard__summary">Advanced B2B workflows for a medical-supply distributor — including a module good enough that Magento absorbed it into the platform itself.</p>
             <ul class="chips">
               <li>Shared address book + PO approvals, now on thousands of merchants</li>
@@ -450,7 +500,6 @@
             <div><dt>Role</dt><dd>Sr. Magento Developer</dd></div>
             <div><dt>Stack</dt><dd>Magento 2 B2B · PHP · RabbitMQ · Ecometry</dd></div>
             <div><dt>Legacy</dt><dd>Code shipped in Magento core B2B</dd></div>
-            <div><dt>Years</dt><dd>2018 – 2021</dd></div>
           </dl>
         </div>
         <button class="pcard__toggle" type="button" aria-expanded="false">
@@ -553,7 +602,7 @@
         <li><span>Vortex Optics</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>Zoll Medical</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>Goutal Paris</span><span class="shipped">✓ SHIPPED</span></li>
-        <li><span>American Musical</span><span class="shipped">✓ SHIPPED</span></li>
+        <li><span>American Musical Supply</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>Direxion</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>Boston Interiors</span><span class="shipped">✓ SHIPPED</span></li>
         <li><span>Tiësto Shop</span><span class="shipped">✓ SHIPPED</span></li>

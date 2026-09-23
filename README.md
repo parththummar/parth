@@ -13,7 +13,7 @@ build for a living. Each lifecycle stage is a résumé section:
 | 01 · Placed | Hero — order payload (JSON) with a live `in_transit` counter |
 | 02 · Validated | About + 3× Adobe Certified Expert checks |
 | 03 · Queued | Career stats as queue metrics |
-| 04 · Synced | Six featured projects as integration hops, with expandable request traces |
+| 04 · Synced | Seven featured projects as integration hops, with expandable request traces |
 | 05 · Paid | Payment gateways + stack manifest |
 | 06 · Fulfilled | 70+ client archive as order history |
 | 07 · Delivered | Contact — the order docks |
